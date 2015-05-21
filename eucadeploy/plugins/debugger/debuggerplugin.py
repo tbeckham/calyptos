@@ -6,6 +6,7 @@ from fabric.decorators import task
 from fabric.operations import run, get, settings
 from fabric.state import env
 from fabric.tasks import execute
+from fabric.network import disconnect_all
 import six
 
 
@@ -25,7 +26,14 @@ class DebuggerPlugin(object):
         print cyan(self.message_style.format('DEBUG STARTING', self.name))
 
     def __del__(self):
-        self.report()
+        try:
+            disconnect_all()
+        except:
+            message = "Failed to disconnect from all hosts"
+            print red(self.message_style.format('DISCONNECT FAILED', message))
+            raise
+        finally:
+            self.report()
 
     def success(self, message):
         # Function to display and tally success of a debug step
