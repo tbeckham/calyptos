@@ -61,7 +61,9 @@ setup(
             'file_permissions = eucadeploy.plugins.debugger.'
             'file_permissions:FilePermissions',
             'eucalyptus_sosreports = eucadeploy.plugins.debugger.'
-            'eucalyptus_sosreports:EucalyptusSosReports'
+            'eucalyptus_sosreports:EucalyptusSosReports',
+            'component_storage_check = eucadeploy.plugins.debugger.'
+            'component_storage_check:CheckStorage'
         ]
     }
 )
