@@ -22,7 +22,7 @@ class CheckStorage(DebuggerPlugin):
         
         for host in all_hosts:
             disk_size = int(disk_storage[host].strip('G'))
-            if disk_size < 30:
+            if disk_size < self.min_disk_req:
                 self.failure(host + ': 30 gig minimum disk requirement'
                              + ' has not been met')
             else:
@@ -35,7 +35,7 @@ class CheckStorage(DebuggerPlugin):
 
         for host in all_hosts:
             mem_size = int(mem_storage[host])
-            if mem_size < 4000000:
+            if mem_size < self.min_memory_req:
                 self.failure(host + ': 4 gig minimum memory requirement'
                              + ' has not been met')
             else:
