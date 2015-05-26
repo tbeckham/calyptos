@@ -12,14 +12,16 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class DebuggerPlugin(object):
-    #Base class for example plugin used in the tutorial.
+    #Base class for Debugger Plugin
 
     def __init__(self, component_deployer):
         self.passed = 0
         self.failed = 0
         self.warnings = 0
         self.message_style = "[{0: <20}] {1}"
+        # Minimmum memory requirement for each cloud component
         self.min_memory_req = 4000000
+        # Minimmum disk space requirement for each cloud component
         self.min_disk_req = 30
         self.name = self.__class__.__name__
         self.component_deployer = component_deployer
