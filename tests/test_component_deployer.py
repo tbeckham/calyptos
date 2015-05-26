@@ -1,6 +1,5 @@
-from eucadeploy.componentdeployer import ComponentDeployer
+from calyptos.componentdeployer import ComponentDeployer
 
 
 def test_constructor():
-    component_deployer = ComponentDeployer('foobar', 'etc/environment.yml',
-                                           'etc/environment.yml')
+    component_deployer = ComponentDeployer('etc/environment.yml')
