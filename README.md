@@ -2,6 +2,8 @@
 
 This is a tool for managing your Eucalyptus deployments
 
+# [Documentation](http://calyptos.readthedocs.org/en/latest/)
+
 ## Install
 
 ### On a CentOS 6 system:
@@ -9,7 +11,7 @@ This is a tool for managing your Eucalyptus deployments
     yum install -y python-devel gcc git python-setuptools
     easy_install fabric PyYAML
     curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk
-    git clone https://github.com/viglesiasce/euca-deploy
+    git clone https://github.com/eucalyptus/calyptos
     cd euca-deploy
     python setup.py install
     
