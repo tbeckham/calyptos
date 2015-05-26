@@ -24,6 +24,8 @@ The configuration is written in YAML and uses the Chef environment structure. Ex
 ### Validate
 In this stage we run validations against the configuration file to ensure that the deployment will succeed as we expect.
 
+    calyptos validate -e <your-environment-file>
+
 ### Prepare
 This step ensures that Chef is installed on all servers and that we can SSH to all of them. It is nice to know that we are on good footing before we get going with the deployment.
 
