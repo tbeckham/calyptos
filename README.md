@@ -1,6 +1,6 @@
-# Euca Deploy
+# Calyptos
 
-This is a harness for running the Eucalyptus cookbook against a distributed system of nodes without a dependency on a Chef Server. We are using fabric and chef-zero to emulate the functionality of a chef-server. 
+This is a tool for managing your Eucalyptus deployments
 
 ## Install
 
