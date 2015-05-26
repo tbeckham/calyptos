@@ -63,7 +63,9 @@ setup(
             'eucalyptus_sosreports = eucadeploy.plugins.debugger.'
             'eucalyptus_sosreports:EucalyptusSosReports',
             'component_storage_check = eucadeploy.plugins.debugger.'
-            'component_storage_check:CheckStorage'
+            'component_storage_check:CheckStorage',
+            'debug_compute_req = eucadeploy.plugins.debugger.'
+            'debug_compute_req:CheckComputeRequirements'
         ]
     }
 )

@@ -19,10 +19,12 @@ class DebuggerPlugin(object):
         self.failed = 0
         self.warnings = 0
         self.message_style = "[{0: <20}] {1}"
-        # Minimmum memory requirement for each cloud component
+        # Minimmum memory requirement for each cloud component in KB
         self.min_memory_req = 4000000
-        # Minimmum disk space requirement for each cloud component
+        # Minimmum disk space requirement for each cloud component in GB
         self.min_disk_req = 30
+        # Supported CentOS/RHEL OS version for each component
+        self.os_version = 6
         self.name = self.__class__.__name__
         self.component_deployer = component_deployer
         self.environment = self.component_deployer.read_environment()

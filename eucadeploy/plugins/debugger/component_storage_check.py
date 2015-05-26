@@ -1,3 +1,4 @@
+from __future__ import division
 from fabric.context_managers import hide
 import re
 from eucadeploy.plugins.debugger.debuggerplugin import DebuggerPlugin
@@ -27,11 +28,11 @@ class CheckStorage(DebuggerPlugin):
         for host in all_hosts:
             disk_size = int(disk_storage[host].strip('G'))
             if disk_size < self.min_disk_req:
-                self.failure(host + ': ' + self.min_disk_req
+                self.failure(host + ': ' + str(self.min_disk_req)
                              + ' gig minimum disk requirement'
                              + ' has not been met')
             else:
-                self.success(host + ': ' + self.min_disk_req
+                self.success(host + ': ' + str(self.min_disk_req)
                              + ' gig minimum disk requirements met')
 
     def _verify_memory_storage(self, all_hosts):
@@ -46,10 +47,11 @@ class CheckStorage(DebuggerPlugin):
 
         for host in all_hosts:
             mem_size = int(mem_storage[host])
+            min_memory = self.min_memory_req / 1000000
             if mem_size < self.min_memory_req:
-                self.failure(host + ': ' + self.min_memory_req
+                self.failure(host + ': ' + str(min_memory)
                              + ' gig minimum memory requirement'
                              + ' has not been met')
             else:
-                self.success(host + ': ' + self.min_memory_req
+                self.success(host + ': ' + str(min_memory)
                             + ' gig minimum memory requirements met')
