@@ -10,7 +10,6 @@ This is a tool for managing your Eucalyptus deployments
 
     yum install -y python-devel gcc git python-setuptools
     easy_install fabric PyYAML
-    curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk
     git clone https://github.com/eucalyptus/calyptos
     cd calyptos
     python setup.py install
@@ -19,7 +18,7 @@ This is a tool for managing your Eucalyptus deployments
 The cloud lifecycle is broken down into many phases:
 
 ### Configure
-The configuration is written in YAML and uses the Chef environment structure. Examples can be found in the examples directory. For a full list of attributes that can be set look at the [Eucalyptus Cookbook attributes](https://github.com/eucalyptus/eucalyptus-cookbook/blob/testing/attributes/default.rb). Edit the etc/environment.yml file to match your deployment topology and configuration.
+The configuration is written in YAML. Examples can be found in the examples directory. For a full list of attributes that can be set look at the [Eucalyptus Cookbook attributes](https://github.com/eucalyptus/eucalyptus-cookbook/blob/testing/attributes/default.rb). Edit the etc/environment.yml file to match your deployment topology and configuration.
 
 ### Validate
 In this stage we run validations against the configuration file to ensure that the deployment will succeed as we expect.
@@ -27,7 +26,7 @@ In this stage we run validations against the configuration file to ensure that t
     calyptos validate -e <your-environment-file>
 
 ### Prepare
-This step ensures that Chef is installed on all servers and that we can SSH to all of them. It is nice to know that we are on good footing before we get going with the deployment.
+This step ensures that our dependencies are installed on all servers and that we can SSH to all of them. It is nice to know that we are on good footing before we get going with the deployment.
 
     calyptos prepare -p <root-ssh-password-for-deployment-systems>
 
