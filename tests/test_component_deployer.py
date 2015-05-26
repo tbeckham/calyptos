@@ -1,5 +1,5 @@
-from calyptos.componentdeployer import ComponentDeployer
+from calyptos.rolebuilder import RoleBuilder
 
 
 def test_constructor():
-    component_deployer = ComponentDeployer('etc/environment.yml')
+    component_deployer = RoleBuilder('etc/environment.yml')

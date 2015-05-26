@@ -1,7 +1,13 @@
 import yaml
 
 
-class ComponentDeployer():
+class RoleBuilder():
+
+    # Global list of roles
+    ROLE_LIST = ['clc', 'user-facing', 'midonet-gw',
+                 'cluster-controller', 'storage-controller',
+                 'node-controller', 'midolman', 'all']
+
     def __init__(self, environment_file='environment.yml'):
         self.environment_file = environment_file
         self.roles = self.get_roles()
@@ -14,26 +20,35 @@ class ComponentDeployer():
         env_dict = self.read_environment()
         return env_dict['default_attributes']['eucalyptus']
 
+    def _initialize_roles(self):
+        roles = {}
+        for role in self.ROLE_LIST:
+            roles[role] = set()
+        return roles
+
     def get_roles(self):
+        roles = self._initialize_roles()
         euca_attributes = self.get_euca_attributes()
         topology = euca_attributes['topology']
-        if 'clc-1' not in topology:
-            raise IndexError("Unable to find CLC in topology")
-        roles = {'clc': set([topology['clc-1']]),
-                 'user-facing': set(topology['user-facing']),
-                 'cluster-controller': set(), 'storage-controller': set(),
-                 'node-controller': set(), 'vmware-broker': set(), 'nuke': set(),
-                 'midolman': set(), 'midonet-gw': set(),
-                 'all': set([topology['clc-1']])
-                 }
+
+        # Add CLC
+        roles['clc'] = set([topology['clc-1']])
+        roles['all'] = set([topology['clc-1']])
+
+        # Add UFS
+        roles['user-facing'] = set(topology['user-facing'])
         for ufs in topology['user-facing']:
             roles['all'].add(ufs)
+
+        # Add Walrus
         if 'walrus' in topology:
             roles['walrus'] = set([topology['walrus']])
             roles['all'].add(topology['walrus'])
         else:
             # No walrus defined assuming RiakCS
             roles['walrus'] = set()
+
+        # Add cluster level components
         for name in topology['clusters']:
             roles['cluster'] = {}
             if 'cc-1' in topology['clusters'][name]:
@@ -57,6 +72,8 @@ class ComponentDeployer():
                 roles['node-controller'].add(node)
                 roles['cluster'][name].add(node)
             roles['all'].update(roles['cluster'][name])
+
+        # Add Midokura roles
         if euca_attributes['network']['mode'] == 'VPCMIDO':
             roles['midolman'] = roles['node-controller']
             roles['midonet-gw'] = roles['clc']

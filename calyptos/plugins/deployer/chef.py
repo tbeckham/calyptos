@@ -6,7 +6,7 @@ from fabric.context_managers import hide
 from fabric.tasks import execute
 from calyptos.chefmanager import ChefManager
 import os
-from calyptos.componentdeployer import ComponentDeployer
+from calyptos.rolebuilder import RoleBuilder
 
 
 class Chef(DeployerPlugin):
@@ -19,15 +19,14 @@ class Chef(DeployerPlugin):
             self.hidden_outputs = []
         else:
             self.hidden_outputs = ['running', 'stdout', 'stderr']
-        self.component_deployer = ComponentDeployer(environment_file)
-        self.roles = self.component_deployer.get_roles()
+        self.role_builder = RoleBuilder(environment_file)
+        self.roles = self.role_builder.get_roles()
         self.all_hosts = self.roles['all']
         self.environment_name = self._write_json_environment()
         self._prepare_fs(repo, branch, debug)
         self.chef_manager = ChefManager(password, self.environment_name,
                                         self.roles['all'])
-        self.config_file = config_file
-        self.config = self.read_config()
+        self.config = self.get_chef_config(config_file)
 
     def _prepare_fs(self, repo, branch, debug):
         ChefManager.create_chef_repo()
@@ -43,11 +42,19 @@ class Chef(DeployerPlugin):
                                                     '/cookbooks'),
                                        debug=debug)
 
-    def read_config(self):
-        return yaml.load(open(self.config_file).read())
+    @staticmethod
+    def get_chef_config(config_file):
+        full_config = yaml.load(open(config_file).read())
+        if 'deployer' in full_config:
+            if 'chef' in full_config['deployer']:
+                return full_config['deployer']['chef']
+            else:
+                raise IndexError('Unable to find chef config in deployer section of config file')
+        else:
+            raise IndexError('Unable to find deployer section of config file')
 
     def _get_recipe_list(self, component):
-        for recipe_dict in self.config['recipes']:
+        for recipe_dict in self.config['roles']:
             if component in recipe_dict:
                 return recipe_dict[component]
         raise ValueError('No component found for: ' + component)
@@ -95,7 +102,7 @@ class Chef(DeployerPlugin):
     def provision(self):
         # Install all other components and configure CLC
         self.chef_manager.clear_run_list(self.all_hosts)
-        for role_dict in self.config['recipes']:
+        for role_dict in self.config['roles']:
             component_name = role_dict.keys().pop()
             self.chef_manager.add_to_run_list(self.roles[component_name],
                                               self._get_recipe_list(
@@ -104,7 +111,7 @@ class Chef(DeployerPlugin):
         clc = self.roles['clc']
         self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
         self._run_chef_on_hosts(clc)
-        if self.component_deployer.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
+        if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
             midonet_gw = self.roles['midonet-gw']
             create_resources = 'midokura::create-first-resources'
             self.chef_manager.add_to_run_list(midonet_gw,
@@ -113,7 +120,6 @@ class Chef(DeployerPlugin):
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
-        self.chef_manager.add_to_run_list(self.all_hosts,
-                                          self._get_recipe_list('nuke'))
+        self.chef_manager.add_to_run_list(self.all_hosts, ['eucalyptus::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
         self.chef_manager.clear_run_list(self.all_hosts)

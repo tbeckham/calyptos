@@ -2,7 +2,7 @@
 import argparse
 from fabric.colors import yellow
 from stevedore import driver, extension
-from calyptos.componentdeployer import ComponentDeployer
+from calyptos.rolebuilder import RoleBuilder
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     parser.add_argument('--debug', action='store_true', default=False)
     args = parser.parse_args()
 
-    component_deployer = ComponentDeployer(args.environment)
+    component_deployer = RoleBuilder(args.environment)
     if args.operation == 'validate':
         mgr = extension.ExtensionManager(
             namespace='calyptos.validator',
