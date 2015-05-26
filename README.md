@@ -12,7 +12,7 @@ This is a tool for managing your Eucalyptus deployments
     easy_install fabric PyYAML
     curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk
     git clone https://github.com/eucalyptus/calyptos
-    cd euca-deploy
+    cd calyptos
     python setup.py install
     
 ## Lifecycle Actions
@@ -28,17 +28,17 @@ In this stage we run validations against the configuration file to ensure that t
 ### Prepare
 This step ensures that Chef is installed on all servers and that we can SSH to all of them. It is nice to know that we are on good footing before we get going with the deployment.
 
-    euca-deploy prepare -p <root-ssh-password-for-deployment-systems>
+    calyptos prepare -p <root-ssh-password-for-deployment-systems>
 
 ### Bootstrap
 This step deploys the CLC and initializes the database. Here we are getting a bit deeper and if complete, we can assume that we've are on good footing to continue deploying the rest of the cloud.
 
-    euca-deploy bootstrap -p <root-ssh-password-for-deployment-systems>
+    calyptos bootstrap -p <root-ssh-password-for-deployment-systems>
   
 ### Provision
 Provisions the rest of the system or update the configuration of an existing system. If you change anything in your environment.yml, you can use this to push that change out to your cloud.
 
-    euca-deploy provision -p <root-ssh-password-for-deployment-systems>
+    calyptos provision -p <root-ssh-password-for-deployment-systems>
     
 ### Debug
 This step will grab all necessary information from a system in order to provide artifacts for use in debugging a problem.  In addition, this step will do the following:
@@ -46,6 +46,6 @@ This step will grab all necessary information from a system in order to provide 
 * Run sosreports on each node
 * Copy the sosreport back to the local client
 ```
-    euca-deploy debug -p <root-ssh-password-for-deployment-systems>
+    calyptos debug -p <root-ssh-password-for-deployment-systems>
 ```
     
