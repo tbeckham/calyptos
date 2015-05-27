@@ -2,7 +2,7 @@ import json
 from fabric.operations import local
 import yaml
 from deployerplugin import DeployerPlugin
-from fabric.context_managers import hide
+from fabric.context_managers import hide, warn_only
 from fabric.tasks import execute
 from calyptos.chefmanager import ChefManager
 import os
@@ -22,8 +22,9 @@ class Chef(DeployerPlugin):
         self.role_builder = RoleBuilder(environment_file)
         self.roles = self.role_builder.get_roles()
         self.all_hosts = self.roles['all']
-        self.environment_name = self._write_json_environment()
+
         self._prepare_fs(repo, branch, debug)
+        self.environment_name = self._write_json_environment()
         self.chef_manager = ChefManager(password, self.environment_name,
                                         self.roles['all'])
         self.config = self.get_chef_config(config_file)
@@ -77,8 +78,10 @@ class Chef(DeployerPlugin):
     def _run_chef_on_hosts(self, hosts):
         with hide(*self.hidden_outputs):
             execute(self.chef_manager.push_deployment_data, hosts=hosts)
-        execute(self.chef_manager.run_chef_client, hosts=hosts)
+        with warn_only():
+            results = execute(self.chef_manager.run_chef_client, hosts=hosts)
         execute(self.chef_manager.pull_node_info, hosts=hosts)
+        return results
 
     def prepare(self):
         self.chef_manager.sync_ssh_key(self.all_hosts)
