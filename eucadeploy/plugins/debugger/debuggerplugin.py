@@ -25,6 +25,8 @@ class DebuggerPlugin(object):
         self.min_disk_req = 30
         # Supported CentOS/RHEL OS version for each component
         self.os_version = 6
+        # Default clock skew allowed for cloud components
+        self.clock_skew_sec = 20
         self.name = self.__class__.__name__
         self.component_deployer = component_deployer
         self.environment = self.component_deployer.read_environment()
