@@ -22,15 +22,14 @@ class Chef(DeployerPlugin):
         self.role_builder = RoleBuilder(environment_file)
         self.roles = self.role_builder.get_roles()
         self.all_hosts = self.roles['all']
-
-        self.chef_manager = ChefManager(password, self.environment_name,
-                                        self.roles['all'])
-        self.chef_manager.install_chef_dk()
         self._prepare_fs(repo, branch, debug)
         self.environment_name = self._write_json_environment()
+        self.chef_manager = ChefManager(password, self.environment_name,
+                                        self.roles['all'])
         self.config = self.get_chef_config(config_file)
 
     def _prepare_fs(self, repo, branch, debug):
+        ChefManager.install_chef_dk()
         ChefManager.create_chef_repo()
         with hide(*self.hidden_outputs):
             local('if [ ! -d eucalyptus-cookbook ]; then '
