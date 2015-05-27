@@ -23,8 +23,8 @@ class Chef(DeployerPlugin):
         self.roles = self.role_builder.get_roles()
         self.all_hosts = self.roles['all']
 
-        self._prepare_fs(repo, branch, debug)
         self._install_chef_dk()
+        self._prepare_fs(repo, branch, debug)
         self.environment_name = self._write_json_environment()
         self.chef_manager = ChefManager(password, self.environment_name,
                                         self.roles['all'])
