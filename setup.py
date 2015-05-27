@@ -65,7 +65,9 @@ setup(
             'component_storage_check = eucadeploy.plugins.debugger.'
             'component_storage_check:CheckStorage',
             'debug_compute_req = eucadeploy.plugins.debugger.'
-            'debug_compute_req:CheckComputeRequirements'
+            'debug_compute_req:CheckComputeRequirements',
+            'verify_component_networking = eucadeploy.plugins.debugger.'
+            'verify_component_networking:VerifyComponentNetworking'
         ]
     }
 )
