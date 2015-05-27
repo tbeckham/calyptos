@@ -71,7 +71,8 @@ class ChefManager():
         else:
             hidden_outputs = ['running', 'stdout', 'stderr']
         with hide(*hidden_outputs):
-            local('chef -v || curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk -v ' + version)
+            local('chef -v | grep "' + version + '" || curl -L https://www.opscode.com/chef/install.sh | '
+                                                 'sudo bash -s -- -P chefdk -v ' + version)
 
     @staticmethod
     def create_chef_repo(debug=False):
