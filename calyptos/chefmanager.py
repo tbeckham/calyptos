@@ -63,6 +63,11 @@ class ChefManager():
             info('Running command: {0}'.format(cmd))
             execute(run, cmd, hosts=hosts)
 
+    def install_chef_dk(self, version='0.6.0'):
+        info('Installing Chef DK ' + version)
+        with hide(*self.hidden_outputs):
+            local('curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk -v ' + version)
+
     @staticmethod
     def create_chef_repo(debug=False):
         info('Creating Chef repository')

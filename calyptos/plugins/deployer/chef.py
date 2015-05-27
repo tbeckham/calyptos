@@ -28,11 +28,8 @@ class Chef(DeployerPlugin):
         self.environment_name = self._write_json_environment()
         self.chef_manager = ChefManager(password, self.environment_name,
                                         self.roles['all'])
+        self.chef_manager.install_chef_dk()
         self.config = self.get_chef_config(config_file)
-
-    def _install_chef_dk(self, version='0.6.0'):
-        with hide(*self.hidden_outputs):
-            local('curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk -v ' + version)
 
     def _prepare_fs(self, repo, branch, debug):
         ChefManager.create_chef_repo()
