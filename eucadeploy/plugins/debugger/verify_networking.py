@@ -114,25 +114,40 @@ class VerifyConnectivity(DebuggerPlugin):
 
     def _verify_storage_controller_comms(self, roles):
         """
-        Verify Cloud Controller, Node Controller and Storage Controller
+        Verify User Facing Service(s) and Node Controller
         can communicate to the Storage Controller on TCP port 8773.
 
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
-        import pdb; pdb.set_trace()
-        pass
+        for sc in roles['storage-controller']:
+            iperf_cmd = 'iperf -c ' + sc + ' -T 32 -t 3 -i 1 -p 8773'
+            with hide('everything'):
+                iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                           roles['user-facing'])    
+            for ufs in roles['user-facing']:
+                flag = False
+                for output in iperf_result[ufs].strip().split('\n'):
+                    if re.search('Connection refused', output):
+                        flag = True
+
+                if flag:
+                    self.failure(ufs + ':User Facing Service was not able'
+                                 + ' to connect to Storage Controller '
+                                 + sc + ' on TCP port 8773')
+                else:
+                    self.success(ufs + ':User Facing Service successfully'
+                                 + ' connected to Storage Controller '
+                                 + sc + ' on TCP port 8773')
+            
 
 
     @task
     def iperf_command_task(command, user='root', password='foobar'):
         """
-        Execute iperf on each host in client mode,
-        testing UDP connection, binding to 228.7.7.3.
-        Time-to-live is 32, port is 8773, transmitting every 3 seconds,
-        and pausing 1 second between periodic bandwidth
-        reports.
+        Execute iperf on each host in client mode
 
+        :param command:  Iperf command to execute
         :param user: username of the remote user
         :param password:  password of the remote user
         """
@@ -142,7 +157,7 @@ class VerifyConnectivity(DebuggerPlugin):
         message = 'Running iperf test on ' + env.host
         message_style = "[{0: <20}] {1}"
         print white(message_style.format('INFO', message))
-        return run(iperf_command)
+        return run(command)
 
     @task
     def test_service_port(host):
