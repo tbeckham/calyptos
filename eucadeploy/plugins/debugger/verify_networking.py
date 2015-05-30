@@ -114,30 +114,37 @@ class VerifyConnectivity(DebuggerPlugin):
 
     def _verify_storage_controller_comms(self, roles):
         """
-        Verify User Facing Service(s) and Node Controller
-        can communicate to the Storage Controller on TCP port 8773.
+        Verify User Facing Service(s), Node Controller and
+        Storage Controller(s) can communicate to
+        to the Storage Controller(s) on TCP port 8773.
 
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        java_hosts = roles['clc']
+        java_hosts.update(roles['storage-controller'])
+
+        self.info('Verifying all Eucalyptus Java Components are'
+                  + ' able to communicate with Storage Controller(s)'
+                  + ' on TCP port 8773') 
         for sc in roles['storage-controller']:
             iperf_cmd = 'iperf -c ' + sc + ' -T 32 -t 3 -i 1 -p 8773'
             with hide('everything'):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
-                                                           roles['user-facing'])    
-            for ufs in roles['user-facing']:
+                                                           java_hosts)    
+            for component in java_hosts:
                 flag = False
-                for output in iperf_result[ufs].strip().split('\n'):
+                for output in iperf_result[component].strip().split('\n'):
                     if re.search('Connection refused', output):
                         flag = True
 
                 if flag:
-                    self.failure(ufs + ':User Facing Service was not able'
-                                 + ' to connect to Storage Controller '
+                    self.failure(component + ':Eucalyptus Java Component was'
+                                 + ' not able to connect to Storage Controller '
                                  + sc + ' on TCP port 8773')
                 else:
-                    self.success(ufs + ':User Facing Service successfully'
-                                 + ' connected to Storage Controller '
+                    self.success(component + ':Eucalyptus Java Component' 
+                                 + ' successfully connected to Storage Controller '
                                  + sc + ' on TCP port 8773')
             
 
