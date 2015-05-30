@@ -124,11 +124,11 @@ class VerifyConnectivity(DebuggerPlugin):
         java_hosts = roles['clc']
         java_hosts.update(roles['storage-controller'])
 
-        self.info('Verifying all Eucalyptus Java Components are'
-                  + ' able to communicate with Storage Controller(s)'
-                  + ' on TCP port 8773') 
         for sc in roles['storage-controller']:
             iperf_cmd = 'iperf -c ' + sc + ' -T 32 -t 3 -i 1 -p 8773'
+            self.info('Verifying all Eucalyptus Java Components are'
+                      + ' able to communicate with Storage Controller'
+                      + ' ' + sc + ' on TCP port 8773') 
             with hide('everything'):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            java_hosts)    
@@ -146,8 +146,34 @@ class VerifyConnectivity(DebuggerPlugin):
                     self.success(component + ':Eucalyptus Java Component' 
                                  + ' successfully connected to Storage Controller '
                                  + sc + ' on TCP port 8773')
+            ncs = {}
+            for name in roles['cluster']:
+                if sc in roles['cluster'][name]:
+                    ncs = roles['node-controller'].intersection(
+                                                                roles['cluster'][name])
             
+            self.info('Verifying Node Controllers associated with the same'
+                      + ' cluster as the Storage Controller ' + sc
+                      + ' can communicate on TCP port 8773')   
 
+            with hide('everything'):
+                iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                           ncs)    
+            for nc in ncs:
+                flag = False
+                for output in iperf_result[nc].strip().split('\n'):
+                    if re.search('Connection refused', output):
+                        flag = True
+
+                if flag:
+                    self.failure(nc + ':Node Controller was not able'
+                                 + ' to communicate to ' + sc 
+                                 + ' on TCP port 8773')
+                else:
+                    self.success(nc + ':Node Controller successfully'
+                                 + ' comunicated to ' + sc 
+                                 + ' on TCP port 8773')
+                
 
     @task
     def iperf_command_task(command, user='root', password='foobar'):
