@@ -25,7 +25,7 @@ class VerifyConnectivity(DebuggerPlugin):
         self._verify_storage_controller_comms(roles)
         self.info('Verify Eucalyptus Component communication'
                   + ' to the Object Storage Gateway')
-        #self._verify_osg_communication(roles)
+        self._verify_osg_communication(roles)
         self.info('Confirm Eucalyptus Java components'
                   + ' can communicate with database on'
                   + ' Cloud Controller component')
@@ -174,6 +174,43 @@ class VerifyConnectivity(DebuggerPlugin):
                                  + ' comunicated to ' + sc 
                                  + ' on TCP port 8773')
                 
+    def _verify_osg_communication(self, roles):
+        """
+        Confirm proper communication between Cloud Controller,
+        Node Controller(s), and Storage Controller(s) to Object
+        Storage Gateway.
+
+        :param roles: set of roles (cloud components) for a given 
+                      Eucalyptus cloud
+        """
+        components = roles['clc']
+        for role in ['storage-controller', 'node-controller']:
+            components.update(roles[role])
+
+        for osg in roles['user-facing']:
+            iperf_cmd = 'iperf -c ' + osg + ' -T 32 -t 3 -i 1 -p 8773'
+            self.info('Verifying Cloud Controller, Node Controller(s) and'
+                      + ' and Storage Controller(s) are able to communicate'
+                      + ' with Object Storage Gateway ' + osg + ' on TCP port 8773') 
+            with hide('everything'):
+                iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                           components)    
+
+            for component in components:
+                flag = False
+                for output in iperf_result[component].strip().split('\n'):
+                    if re.search('Connection refused', output):
+                        flag = True
+
+                if flag:
+                    self.failure(component + ':Eucalyptus Component was'
+                                 + ' not able to connect to Object Storage '
+                                 + 'Controller ' + osg + ' on TCP port 8773')
+                else:
+                    self.success(component + ':Eucalyptus Component'
+                                 + ' successfully connected to Object Storage '
+                                 + 'Controller ' + osg + ' on TCP port 8773')
+        
 
     @task
     def iperf_command_task(command, user='root', password='foobar'):
