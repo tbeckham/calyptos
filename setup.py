@@ -67,7 +67,9 @@ setup(
             'debug_compute_req = eucadeploy.plugins.debugger.'
             'debug_compute_req:CheckComputeRequirements',
             'verify_component_networking = eucadeploy.plugins.debugger.'
-            'verify_component_networking:VerifyComponentNetworking'
+            'verify_component_networking:VerifyComponentNetworking',
+            'verify_networking = eucadeploy.plugins.debugger.'
+            'verify_networking:VerifyConnectivity'
         ]
     }
 )
