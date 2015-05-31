@@ -17,9 +17,7 @@ class VerifyConnectivity(DebuggerPlugin):
         self._install_conn_tool(all_hosts)
         self.info('Verify End-User Connectivity to User Facing'
                   + ' Services and Cloud Controller')
-        end_user_services = roles['clc']
-        end_user_services.update(roles['user-facing'])
-        self._verify_enduser_access(end_user_services)
+        self._verify_enduser_access(roles['user-facing'])
         self.info('Verify Eucalyptus Component communication'
                   + ' to the Storage Controller')
         self._verify_storage_controller_comms(roles)
@@ -29,23 +27,11 @@ class VerifyConnectivity(DebuggerPlugin):
         self.info('Confirm Eucalyptus Java components'
                   + ' can communicate with database on'
                   + ' Cloud Controller component')
-        java_components = roles['clc']
-
-        euca_java_roles = ['user-facing', 'storage-controller']
-        if roles['walrus']:
-            euca_java_roles.append('walrus')
-
-        for component in euca_java_roles:
-            java_components.update(roles[component])
-        #self._verify_java_db_comms(roles['clc'],
-        #                           java_components)
-        
+        self._verify_java_db_comms(roles)
         self.info('Verify proper connectivity between'
                   + ' Cloud Controller and Cluster'
                   + ' Controller(s)')
-        #self._verify_clc_cc_comms(roles['clc'],
-        #                          roles['cluster-controller'])
-  
+        self._verify_clc_cc_comms(roles)
         self.info('Verify proper connectivity between'
                   + ' Node Controllers and User'
                   + ' Facing Service(s)')
@@ -122,7 +108,7 @@ class VerifyConnectivity(DebuggerPlugin):
                       Eucalyptus cloud
         """
         java_hosts = roles['clc']
-        java_hosts.update(roles['storage-controller'])
+        java_hosts = java_hosts.union(roles['storage-controller'])
 
         for sc in roles['storage-controller']:
             iperf_cmd = 'iperf -c ' + sc + ' -T 32 -t 3 -i 1 -p 8773'
@@ -185,7 +171,7 @@ class VerifyConnectivity(DebuggerPlugin):
         """
         components = roles['clc']
         for role in ['storage-controller', 'node-controller']:
-            components.update(roles[role])
+            components = components.union(roles[role])
 
         for osg in roles['user-facing']:
             iperf_cmd = 'iperf -c ' + osg + ' -T 32 -t 3 -i 1 -p 8773'
@@ -210,6 +196,82 @@ class VerifyConnectivity(DebuggerPlugin):
                     self.success(component + ':Eucalyptus Component'
                                  + ' successfully connected to Object Storage '
                                  + 'Controller ' + osg + ' on TCP port 8773')
+        
+    def _verify_java_db_comms(self, roles):
+        """
+        Verify Eucalyptus Java components can communicate to 
+        the database running on the Cloud Controller on 
+        TCP port 8777
+
+        :param roles: set of roles (cloud components) for a given 
+                      Eucalyptus cloud
+        """
+        java_components = roles['user-facing']
+
+        euca_java_roles = ['storage-controller']
+        if roles['walrus']:
+            euca_java_roles.append('walrus')
+
+        for component in euca_java_roles:
+            java_components = java_components.union(roles[component])
+
+        for host in roles['clc']:
+            iperf_cmd = 'iperf -c ' + host + ' -T 32 -t 5 -i 1 -p 8777'
+            self.info('Verifying Eucalyptus Java Components'
+                      + ' are able to communicate'
+                      + ' with Cloud Controller ' + host + ' on TCP port 8777') 
+            with hide('everything'):
+                iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                           java_components)    
+
+            for component in java_components:
+                flag = False
+                for output in iperf_result[component].strip().split('\n'):
+                    if re.search('Connection refused', output):
+                        flag = True
+
+                if flag:
+                    self.failure(component + ':Eucalyptus Java Component was'
+                                 + ' not able to connect to Cloud '
+                                 + 'Controller ' + host + ' on TCP port 8777')
+                else:
+                    self.success(component + ':Eucalyptus Java Component'
+                                 + ' successfully connected to Cloud '
+                                 + 'Controller ' + host + ' on TCP port 8777')
+            
+
+    def _verify_clc_cc_comms(self, roles):
+        """
+        Verify Cloud Controller(s) can communicate to 
+        Cluster Controller on TCP port 8774 
+
+        :param roles: set of roles (cloud components) for a given 
+                      Eucalyptus cloud
+        """
+        for host in roles['cluster-controller']:
+            iperf_cmd = 'iperf -c ' + host + ' -T 32 -t 5 -i 1 -p 8774'
+            self.info('Verifying Cloud Controller'
+                      + ' is able to communcate'
+                      + ' with Cluster Controller ' + host + ' on TCP port 8774') 
+            with hide('everything'):
+                iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                           roles['clc'])    
+
+            for component in roles['clc']:
+                flag = False
+                for output in iperf_result[component].strip().split('\n'):
+                    if re.search('Connection refused', output):
+                        flag = True
+
+                if flag:
+                    self.failure(component + ':Cloud Controller was'
+                                 + ' not able to connect to Cluster '
+                                 + 'Controller ' + host + ' on TCP port 8774')
+                else:
+                    self.success(component + ':Cloud Controller'
+                                 + ' successfully connected to Cluster '
+                                 + 'Controller ' + host + ' on TCP port 8774')
+            
         
 
     @task
