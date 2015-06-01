@@ -33,11 +33,9 @@ class VerifyConnectivity(DebuggerPlugin):
                   + ' Controller(s)')
         self._verify_clc_cc_comms(roles)
         self.info('Verify proper connectivity between'
-                  + ' Node Controllers and User'
-                  + ' Facing Service(s)')
-        #self._verify_ufs_nc_comms(roles['user-facing'],
-        #                          roles['node-controller'])
-
+                  + ' Cluster Controller(s) and Node'
+                  + ' Controller(s)')
+        self._verify_cc_nc_comms(roles)
 
 
         return (self.passed, self.failed)
@@ -272,7 +270,52 @@ class VerifyConnectivity(DebuggerPlugin):
                                  + ' successfully connected to Cluster '
                                  + 'Controller ' + host + ' on TCP port 8774')
             
-        
+    def _verify_cc_nc_comms(self, roles):        
+        """
+        Verify Cluster Controller(s) can communicate to 
+        Node Controller(s) on TCP port 8775 - based upon cluster
+        association 
+
+        :param roles: set of roles (cloud components) for a given 
+                      Eucalyptus cloud
+        """
+        for cluster in roles['cluster']:
+            cluster_ctrlr = roles['cluster'][cluster].intersection(
+                                                                roles[
+                                                                'cluster-controller'
+                                                                ])
+            cc_list = list(cluster_ctrlr)
+            cc = ', '.join(str(element) for element in cc_list)
+            nodes = roles['cluster'][cluster].intersection(roles[
+                                                        'node-controller'
+                                                        ])
+           
+            self.info('Verifying Cluster Controller '
+                      + cc
+                      + ' in cluster ' + cluster
+                      + ' can communicate to Node Controller(s)'
+                      + ' on TCP port 8775')
+            for node in nodes:
+                iperf_cmd = ('iperf -c ' + node 
+                             + ' -T 32 -t 3 -i 1 -p 8775')
+                with hide('everything'):
+                    iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
+                                                               cluster_ctrlr)    
+                for component in cluster_ctrlr:
+                    flag = False
+                    for output in iperf_result[component].strip().split('\n'):
+                        if re.search('Connection refused', output):
+                            flag = True
+
+                    if flag:
+                        self.failure(component + ':Cluster Controller was'
+                                     + ' not able to connect to Node '
+                                     + 'Controller ' + node + ' on TCP port 8775')
+                    else:
+                        self.success(component + ':Cluster Controller'
+                                     + ' successfully connected to Node '
+                                     + 'Controller ' + node + ' on TCP port 8775')
+            
 
     @task
     def iperf_command_task(command, user='root', password='foobar'):
