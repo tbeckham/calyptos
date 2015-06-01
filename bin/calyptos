@@ -3,8 +3,28 @@ import argparse
 from fabric.colors import yellow
 from stevedore import driver, extension
 from calyptos.rolebuilder import RoleBuilder
+import os
+import shutil
+
+dot_dir = os.path.expanduser('~/.calyptos')
+default_cfgfile = os.path.join(dot_dir + "/" + "config.yml")
+
+def locate_cfgfile():
+    if not os.path.isfile(default_cfgfile):
+        if not os.path.exists(dot_dir):
+            try:
+                os.makedirs(dot_dir)
+            except OSError as e:
+                print('Error: cannot create directory ~/.calyptos: %s' % e)
+        try:
+            shutil.copy('/usr/share/calyptos/etc/config.yml', default_cfgfile)
+        except shutil.Error as e:
+            print('Error: %s' % e)
+        except IOError as e:
+            print('Error: %s' % e.strerror)
 
 if __name__ == '__main__':
+    locate_cfgfile()
     parser = argparse.ArgumentParser()
     default_repo = 'https://github.com/eucalyptus/eucalyptus-cookbook'
     parser.add_argument('operation', choices=['validate',
@@ -13,7 +33,7 @@ if __name__ == '__main__':
                                               'provision',
                                               'debug',
                                               'uninstall'])
-    parser.add_argument('-c', '--config', default='etc/config.yml')
+    parser.add_argument('-c', '--config', default=default_cfgfile)
     parser.add_argument('-e', '--environment', default='etc/environment.yml')
     parser.add_argument('-p', '--password', default='foobar')
     parser.add_argument('-b', '--branch', default='euca-4.2')

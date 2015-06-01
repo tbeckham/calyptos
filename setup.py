@@ -140,6 +140,6 @@ setup(
         'build_py': build_py_with_git_version,
         'sdist': sdist_with_git_version
     },
-    #data_files=[('/etc/calyptos/', ['etc/config.yml']),
-    #            ('/usr/share/calyptos/examples/', example_items)],
+    data_files=[('/usr/share/calyptos/etc', ['etc/config.yml']),
+                ('/usr/share/calyptos/examples/', example_items)],
 )
