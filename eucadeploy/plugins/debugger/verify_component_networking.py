@@ -74,7 +74,7 @@ class VerifyComponentNetworking(DebuggerPlugin):
             euca_java_roles.append('walrus')
 
         for component in euca_java_roles:
-            java_components.update(roles[component])
+            java_components.union(roles[component])
 
         # Install prerequisite packages for multicast test
         self._install_multicast_test_prereq(java_components)
