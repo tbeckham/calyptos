@@ -89,5 +89,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/bin/calyptos
 %{python_sitelib}/calyptos/*
 %{python_sitelib}/*.egg-info
-/usr/share/calyptos/etc/*
+/usr/share/calyptos/config.yml
 /usr/share/calyptos/examples/*
