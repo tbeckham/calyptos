@@ -28,10 +28,9 @@ class DebuggerPlugin(object):
     def __del__(self):
         try:
             disconnect_all()
-        except:
-            message = "Failed to disconnect from all hosts"
+        except Exception as e:
+            message = "Failed to disconnect from all hosts - " + e.message
             print red(self.message_style.format('DISCONNECT FAILED', message))
-            raise
         finally:
             self.report()
 
