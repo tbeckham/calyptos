@@ -301,21 +301,28 @@ class VerifyConnectivity(DebuggerPlugin):
                 with hide('everything'):
                     iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                                cluster_ctrlr)    
-                for component in cluster_ctrlr:
-                    flag = False
-                    for output in iperf_result[component].strip().split('\n'):
-                        if re.search('Connection refused', output):
-                            flag = True
-
-                    if flag:
-                        self.failure(component + ':Cluster Controller was'
-                                     + ' not able to connect to Node '
-                                     + 'Controller ' + node + ' on TCP port 8775')
-                    else:
-                        self.success(component + ':Cluster Controller'
-                                     + ' successfully connected to Node '
-                                     + 'Controller ' + node + ' on TCP port 8775')
+                self._process_output(iperf_result,
+                                     cluster_ctrlr,
+                                     component='Cluster Controller', 
+                                     test_component=node,
+                                     port='8775')
             
+
+    def _process_output(self, iperf_result, hosts, component, test_component, port):
+        for host in hosts:
+            flag = False
+            for output in iperf_result[host].strip().split('\n'):
+                if re.search('Connection refused', output):
+                    flag = True
+
+            if flag:
+                self.failure(host + ':' + component + ' was'
+                             + ' not able to connect to '
+                             + test_component + ' on TCP port ' + port)
+            else:
+                self.success(host + ':' + component
+                             + ' successfully connected to '
+                             + test_component + ' on TCP port ' + port)
 
     @task
     def iperf_command_task(command, user='root', password='foobar'):
