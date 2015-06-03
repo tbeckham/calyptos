@@ -4,13 +4,14 @@ from eucadeploy.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 class CheckComputeRequirements(DebuggerPlugin):
     def debug(self):
+        # Supported CentOS/RHEL OS version for each component
+        self.os_version = 6
+        # Default clock skew allowed for cloud components
+        self.clock_skew_sec = 20
         all_hosts = self.component_deployer.all_hosts
         roles = self.component_deployer.get_roles()
-        self.info('Operation System and Processor verification on all hosts')
         self._verify_os_proc(all_hosts)
-        self.info('NTP/NTPD Test on all hosts')
         self._verify_clocks(all_hosts)
-        self.info('Confirm virtualization is enabled on Node Controllers')
         self._check_virtualization(roles['node-controller'])
 
         return (self.passed, self.failed)
@@ -19,7 +20,10 @@ class CheckComputeRequirements(DebuggerPlugin):
         """
         Verifies supported OS, correct chip architecture and 
         recommended minimum number of processors on all cloud components.  
+  
+        :param all_hosts: a set of Eucalyptus cloud components
         """
+        self.info('Operation System and Processor verification on all hosts')
         os_output = 'cat /etc/system-release' 
         with hide('everything'):
             os_version = self.run_command_on_hosts(os_output, all_hosts)
@@ -73,7 +77,10 @@ class CheckComputeRequirements(DebuggerPlugin):
         cloud component.  In addition, confirms components clock 
         skew isn't greater than the default maximum clock skew allowed for
         the cloud 
+
+        :param all_hosts: a set of Eucalyptus cloud components
         """
+        self.info('NTP/NTPD Test on all hosts')
         packages = ['ntp', 'ntpdate']
         for package in packages:
             with hide('everything'):
@@ -151,7 +158,10 @@ class CheckComputeRequirements(DebuggerPlugin):
         """
         Confirm that node controller(s) have hardware virtualization
         enabled on either Intel or AMD chips.
+
+        :param nodes: a set of Eucalyptus Node Controller components
         """
+        self.info('Confirm virtualization is enabled on Node Controllers')
         virt_output = 'egrep -m1 -w \'^flags[[:blank:]]*:\' /proc/cpuinfo |' \
                       ' egrep -wo \'(vmx|svm)\''
         with hide('everything'):

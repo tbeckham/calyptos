@@ -12,29 +12,12 @@ class VerifyConnectivity(DebuggerPlugin):
     def debug(self):
         all_hosts = self.component_deployer.all_hosts
         roles = self.component_deployer.get_roles()
-        self.info('Confirm iperf has been installed on'
-                  + ' all components')
         self._install_conn_tool(all_hosts)
-        self.info('Verify End-User Connectivity to User Facing'
-                  + ' Services and Cloud Controller')
         self._verify_enduser_access(roles['user-facing'])
-        self.info('Verify Eucalyptus Component communication'
-                  + ' to the Storage Controller')
         self._verify_storage_controller_comms(roles)
-        self.info('Verify Eucalyptus Component communication'
-                  + ' to the Object Storage Gateway')
         self._verify_osg_communication(roles)
-        self.info('Confirm Eucalyptus Java components'
-                  + ' can communicate with database on'
-                  + ' Cloud Controller component')
         self._verify_java_db_comms(roles)
-        self.info('Verify proper connectivity between'
-                  + ' Cloud Controller and Cluster'
-                  + ' Controller(s)')
         self._verify_clc_cc_comms(roles)
-        self.info('Verify proper connectivity between'
-                  + ' Cluster Controller(s) and Node'
-                  + ' Controller(s)')
         self._verify_cc_nc_comms(roles)
 
 
@@ -47,6 +30,8 @@ class VerifyConnectivity(DebuggerPlugin):
 
         :param all_hosts: set of all Eucalyptus components
         """
+        self.info('Confirm iperf has been installed on'
+                  + ' all components')
         packages = ['iperf']
         for package in packages:
             with hide('everything'):
@@ -82,6 +67,8 @@ class VerifyConnectivity(DebuggerPlugin):
         :param  end_user_service_pts: a set of Eucalyptus
                                       Java components
         """
+        self.info('Verify End-User Connectivity to User Facing'
+                  + ' Services and Cloud Controller')
         ports = ['8773']
         for host in end_user_service_pts:
             for port in ports:
@@ -105,6 +92,8 @@ class VerifyConnectivity(DebuggerPlugin):
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        self.info('Verify Eucalyptus Component communication'
+                  + ' to the Storage Controller')
         java_hosts = roles['clc']
         java_hosts = java_hosts.union(roles['storage-controller'])
 
@@ -167,6 +156,8 @@ class VerifyConnectivity(DebuggerPlugin):
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        self.info('Verify Eucalyptus Component communication'
+                  + ' to the Object Storage Gateway')
         components = roles['clc']
         for role in ['storage-controller', 'node-controller']:
             components = components.union(roles[role])
@@ -204,6 +195,9 @@ class VerifyConnectivity(DebuggerPlugin):
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        self.info('Confirm Eucalyptus Java components'
+                  + ' can communicate with database on'
+                  + ' Cloud Controller component')
         java_components = roles['user-facing']
 
         euca_java_roles = ['storage-controller']
@@ -246,6 +240,9 @@ class VerifyConnectivity(DebuggerPlugin):
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        self.info('Verify proper connectivity between'
+                  + ' Cloud Controller and Cluster'
+                  + ' Controller(s)')
         for host in roles['cluster-controller']:
             iperf_cmd = 'iperf -c ' + host + ' -T 32 -t 5 -i 1 -p 8774'
             self.info('Verifying Cloud Controller'
@@ -279,6 +276,9 @@ class VerifyConnectivity(DebuggerPlugin):
         :param roles: set of roles (cloud components) for a given 
                       Eucalyptus cloud
         """
+        self.info('Verify proper connectivity between'
+                  + ' Cluster Controller(s) and Node'
+                  + ' Controller(s)')
         for cluster in roles['cluster']:
             cluster_ctrlr = roles['cluster'][cluster].intersection(
                                                                 roles[

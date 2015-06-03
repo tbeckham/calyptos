@@ -12,10 +12,7 @@ class VerifyComponentNetworking(DebuggerPlugin):
     def debug(self):
         all_hosts = self.component_deployer.all_hosts
         roles = self.component_deployer.get_roles()
-        self.info('Verify recommended NIC configuration on all hosts')
         self._confirm_nics(all_hosts)
-        self.info('Verify multicast group communication between all'
-                  + ' Eucalyptus java components')
         self._confirm_multicast(roles)
 
         return (self.passed, self.failed)
@@ -28,6 +25,7 @@ class VerifyComponentNetworking(DebuggerPlugin):
 
         :param all_hosts: list of Eucalyptus components
         """
+        self.info('Verify recommended NIC configuration on all hosts')
         # Use lspci to grab network interfaces
         lspci_output = 'lspci | egrep -i \'network|ethernet\''
         with hide('everything'):
@@ -66,6 +64,8 @@ class VerifyComponentNetworking(DebuggerPlugin):
  
         :param roles: set of Eucalyptus components based on roles
         """
+        self.info('Verify multicast group communication between all'
+                  + ' Eucalyptus java components')
         # Make a set of all Eucalyptus Java components
         java_components = roles['clc']
         
@@ -74,7 +74,7 @@ class VerifyComponentNetworking(DebuggerPlugin):
             euca_java_roles.append('walrus')
 
         for component in euca_java_roles:
-            java_components.union(roles[component])
+            java_components.update(roles[component])
 
         # Install prerequisite packages for multicast test
         self._install_multicast_test_prereq(java_components)

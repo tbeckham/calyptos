@@ -7,9 +7,11 @@ class CheckStorage(DebuggerPlugin):
     def debug(self):
         all_hosts = self.component_deployer.all_hosts
         roles = self.component_deployer.get_roles()
-        self.info('Minimum Disk Requirements Test on all hosts')
+        # Minimmum memory requirement for each cloud component in KB
+        self.min_memory_req = 4000000
+        # Minimmum disk space requirement for each cloud component in GB
+        self.min_disk_req = 30
         self._verify_disk_storage(all_hosts)
-        self.info('Minimum Memory Requirements Test on all hosts')
         self._verify_memory_storage(all_hosts)
 
         return (self.passed, self.failed)
@@ -19,7 +21,10 @@ class CheckStorage(DebuggerPlugin):
         Verifies minimum disk space requirement is met on each component.
         The Linux tool - df - is used for the validation.
         Disk minimum is defined in debuggerplugin.py
+        
+        :param all_hosts: a set of Eucalyptus cloud components
         """
+        self.info('Minimum Disk Requirements Test on all hosts')
         df_output = 'df -h --sync /var/lib/eucalyptus -P -T --block-size G |' \
                     ' awk \'{print $3}\' | grep -v Size | grep -v blocks'
         with hide('everything'):
@@ -40,7 +45,10 @@ class CheckStorage(DebuggerPlugin):
         Verifies mimimum memory requirement is met on each component.
         The Linux tool - free - is used for the validation.
         Memory minimum is defined in debuggerplugin.py
+
+        :param all_hosts: a set of Eucalyptus cloud components
         """
+        self.info('Minimum Memory Requirements Test on all hosts')
         mem_output = 'free | grep \'Mem:\' | awk \'{print $2}\''
         with hide('everything'):
             mem_storage = self.run_command_on_hosts(mem_output, all_hosts)
