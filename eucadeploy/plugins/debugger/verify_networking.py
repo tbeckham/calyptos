@@ -105,20 +105,12 @@ class VerifyConnectivity(DebuggerPlugin):
             with hide('everything'):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            java_hosts)    
-            for component in java_hosts:
-                flag = False
-                for output in iperf_result[component].strip().split('\n'):
-                    if re.search('Connection refused', output):
-                        flag = True
+            self._process_output(iperf_result,
+                                 java_hosts,
+                                 component='Eucalyptus Java Component', 
+                                 test_component=sc,
+                                 port='8773')
 
-                if flag:
-                    self.failure(component + ':Eucalyptus Java Component was'
-                                 + ' not able to connect to Storage Controller '
-                                 + sc + ' on TCP port 8773')
-                else:
-                    self.success(component + ':Eucalyptus Java Component' 
-                                 + ' successfully connected to Storage Controller '
-                                 + sc + ' on TCP port 8773')
             ncs = {}
             for name in roles['cluster']:
                 if sc in roles['cluster'][name]:
@@ -132,20 +124,12 @@ class VerifyConnectivity(DebuggerPlugin):
             with hide('everything'):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            ncs)    
-            for nc in ncs:
-                flag = False
-                for output in iperf_result[nc].strip().split('\n'):
-                    if re.search('Connection refused', output):
-                        flag = True
+            self._process_output(iperf_result,
+                                 ncs,
+                                 component='Node Controller', 
+                                 test_component=sc,
+                                 port='8773')
 
-                if flag:
-                    self.failure(nc + ':Node Controller was not able'
-                                 + ' to communicate to ' + sc 
-                                 + ' on TCP port 8773')
-                else:
-                    self.success(nc + ':Node Controller successfully'
-                                 + ' comunicated to ' + sc 
-                                 + ' on TCP port 8773')
                 
     def _verify_osg_communication(self, roles):
         """
@@ -171,20 +155,12 @@ class VerifyConnectivity(DebuggerPlugin):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            components)    
 
-            for component in components:
-                flag = False
-                for output in iperf_result[component].strip().split('\n'):
-                    if re.search('Connection refused', output):
-                        flag = True
+            self._process_output(iperf_result,
+                                 components,
+                                 component='Eucalyptus Component', 
+                                 test_component=osg,
+                                 port='8773')
 
-                if flag:
-                    self.failure(component + ':Eucalyptus Component was'
-                                 + ' not able to connect to Object Storage '
-                                 + 'Controller ' + osg + ' on TCP port 8773')
-                else:
-                    self.success(component + ':Eucalyptus Component'
-                                 + ' successfully connected to Object Storage '
-                                 + 'Controller ' + osg + ' on TCP port 8773')
         
     def _verify_java_db_comms(self, roles):
         """
@@ -216,21 +192,12 @@ class VerifyConnectivity(DebuggerPlugin):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            java_components)    
 
-            for component in java_components:
-                flag = False
-                for output in iperf_result[component].strip().split('\n'):
-                    if re.search('Connection refused', output):
-                        flag = True
+            self._process_output(iperf_result,
+                                 java_components,
+                                 component='Eucalyptus Java Component', 
+                                 test_component=host,
+                                 port='8777')
 
-                if flag:
-                    self.failure(component + ':Eucalyptus Java Component was'
-                                 + ' not able to connect to Cloud '
-                                 + 'Controller ' + host + ' on TCP port 8777')
-                else:
-                    self.success(component + ':Eucalyptus Java Component'
-                                 + ' successfully connected to Cloud '
-                                 + 'Controller ' + host + ' on TCP port 8777')
-            
 
     def _verify_clc_cc_comms(self, roles):
         """
@@ -252,20 +219,12 @@ class VerifyConnectivity(DebuggerPlugin):
                 iperf_result = self.execute_iperf_on_hosts(iperf_cmd,
                                                            roles['clc'])    
 
-            for component in roles['clc']:
-                flag = False
-                for output in iperf_result[component].strip().split('\n'):
-                    if re.search('Connection refused', output):
-                        flag = True
+            self._process_output(iperf_result,
+                                 roles['clc'],
+                                 component='Cloud Controller', 
+                                 test_component=host,
+                                 port='8774')
 
-                if flag:
-                    self.failure(component + ':Cloud Controller was'
-                                 + ' not able to connect to Cluster '
-                                 + 'Controller ' + host + ' on TCP port 8774')
-                else:
-                    self.success(component + ':Cloud Controller'
-                                 + ' successfully connected to Cluster '
-                                 + 'Controller ' + host + ' on TCP port 8774')
             
     def _verify_cc_nc_comms(self, roles):        
         """
@@ -309,6 +268,16 @@ class VerifyConnectivity(DebuggerPlugin):
             
 
     def _process_output(self, iperf_result, hosts, component, test_component, port):
+        """
+        Process iperf output from host(s)
+
+        :param iperf_result: list of iperf output for host(s)
+        :param hosts: host(s) that returned output from iperf test command
+        :param component: type of component associated with hosts
+        :param test_component: Eucalyptus component which hosts were tested against
+                               in the iperf test command
+        :param port: port used in iperf test command 
+        """
         for host in hosts:
             flag = False
             for output in iperf_result[host].strip().split('\n'):
