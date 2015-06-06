@@ -20,3 +20,9 @@ deployer:
         - midokura::midolman
       - midonet-gw:
         - midokura
+      - mon-bootstrap:
+        - ceph-cluster::mon-bootstrap
+      - ceph-mons:
+        - ceph-cluster::mons
+      - ceph-osds:
+        - ceph-cluster::osds

@@ -1,0 +1,20 @@
+
+---
+name: "ceph-cluster"
+description: "Ceph cluster"
+cookbook_versions: {}
+json_class: "Chef::Environment"
+chef_type: "environment"
+default_attributes:
+  ceph:
+    config:
+      fsid: "6d7dca16-152c-4401-a93f-88dc916540d2"
+    topology:
+      mon_bootstrap: {ipaddr: "10.111.5.164", hostname: "g-15-09"}
+      mons:
+        - {ipaddr: "10.111.5.127", hostname: "g-26-07"}
+      osds:
+        - {ipaddr: "10.111.5.198", hostname: "b-35"}
+        - {ipaddr: "10.111.5.24", hostname: "h-24"}
+override_attributes: {}
+cookbook_versions: {}

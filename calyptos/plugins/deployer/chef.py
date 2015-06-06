@@ -93,11 +93,17 @@ class Chef(DeployerPlugin):
 
     def bootstrap(self):
         # Install CLC and Initialize DB
-        clc = self.roles['clc']
-        self.chef_manager.clear_run_list(self.all_hosts)
-        self.chef_manager.add_to_run_list(clc,
-                                          self._get_recipe_list('clc'))
-        self._run_chef_on_hosts(clc)
+        if self.roles['mon-bootstrap']:
+            mon_bootstrap = self.roles['mon-bootstrap']
+            self.chef_manager.clear_run_list(self.all_hosts)
+            self.chef_manager.add_to_run_list(mon_bootstrap, self._get_recipe_list('mon-bootstrap'))
+            self._run_chef_on_hosts(mon_bootstrap)
+
+        if self.roles['clc']:
+            self.chef_manager.clear_run_list(self.all_hosts)
+            clc = self.roles['clc']
+            self.chef_manager.add_to_run_list(clc, self._get_recipe_list('clc'))
+            self._run_chef_on_hosts(clc)
 
     def provision(self):
         # Install all other components and configure CLC
@@ -105,18 +111,18 @@ class Chef(DeployerPlugin):
         for role_dict in self.config['roles']:
             component_name = role_dict.keys().pop()
             self.chef_manager.add_to_run_list(self.roles[component_name],
-                                              self._get_recipe_list(
-                                                  component_name))
+                                              self._get_recipe_list(component_name))
         self._run_chef_on_hosts(self.all_hosts)
-        clc = self.roles['clc']
-        self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
-        self._run_chef_on_hosts(clc)
-        if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
-            midonet_gw = self.roles['midonet-gw']
-            create_resources = 'midokura::create-first-resources'
-            self.chef_manager.add_to_run_list(midonet_gw,
-                                              [create_resources])
-            self._run_chef_on_hosts(midonet_gw)
+
+        if self.roles['clc']:
+            clc = self.roles['clc']
+            self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
+            self._run_chef_on_hosts(clc)
+            if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
+                midonet_gw = self.roles['midonet-gw']
+                create_resources = 'midokura::create-first-resources'
+                self.chef_manager.add_to_run_list(midonet_gw, [create_resources])
+                self._run_chef_on_hosts(midonet_gw)
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
