@@ -1,0 +1,39 @@
+
+---
+name: riakcs_cluster
+description: ""
+cookbook_versions: {}
+json_class: "Chef::Environment"
+chef_type: environment
+default_attributes:
+  riak_cs:
+    config:
+      riak_cs:
+        anonymous_user_creation: true
+        fold_objects_for_list_keys: true
+        admin_key": "admin-key"
+        admin_secret": "admin-secret"
+  riak:
+    config:
+      riak_kv:
+        storage_backend: "riak_cs_kv_multi_backend"
+  sysctl:
+    params:
+      net.core.wmem_default: "8388608"
+      net.core.rmem_default: "8388608"
+      net.core.wmem_max: "8388608"
+      net.core.rmem_max: "8388608"
+      net.core.netdev_max_backlog: "10000"
+  riakcs_cluster:
+    topology:
+      head:
+        ipaddr: "10.111.5.164"
+        fqdn: "g-15-09.qa1.eucalyptus-systems.com"
+      stanchion_ip: "10.111.5.164"
+      stanchion_port: 8085
+      nodes:
+      - "10.111.5.127"
+      - "10.111.1.39"
+      - "10.111.1.40"
+      - "10.111.1.51"
+override_attributes: {}

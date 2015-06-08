@@ -26,3 +26,23 @@ deployer:
         - ceph-cluster::mons
       - ceph-osds:
         - ceph-cluster::osds
+      - riak-head:
+        - riakcs-cluster::ttyfix
+        - riak-cs::package
+        - riak
+        - sysctl
+        - riak-cs
+        - riak-cs::stanchion
+        - riak-cs::control
+        - riak-cs-create-admin-user
+        - riakcs-cluster::credentials
+        - riakcs-cluster::sync
+      - riak-node:
+        - riakcs-cluster::ttyfix
+        - riakcs-cluster::sync
+        - riak-cs::package
+        - riak
+        - sysctl
+        - riak-cs
+        - riakcs-cluster::join
+        - riakcs-cluster::mergecreds
