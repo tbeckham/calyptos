@@ -56,7 +56,7 @@ if __name__ == '__main__':
                                               'debug',
                                               'uninstall'])
     parser.add_argument('-c', '--config', default=cfgfile)
-    parser.add_argument('-e', '--environment', default='etc/environment.yml')
+    parser.add_argument('-e', '--environment', required=True)
     parser.add_argument('-p', '--password', default='foobar')
     parser.add_argument('-b', '--branch', default='euca-4.2')
     parser.add_argument('--cookbook-repo',
