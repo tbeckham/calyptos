@@ -17,4 +17,3 @@ default_attributes:
         - {ipaddr: "10.111.5.198", hostname: "b-35"}
         - {ipaddr: "10.111.5.24", hostname: "h-24"}
 override_attributes: {}
-cookbook_versions: {}

@@ -12,10 +12,12 @@ class RoleBuilder():
                  'storage-controller',
                  'node-controller',
                  'midolman',
-                 'all',
                  'mon-bootstrap',
                  'ceph-mons',
-                 'ceph-osds']
+                 'ceph-osds',
+                 'riak-head',
+                 'riak-node',
+                 'all']
 
     def __init__(self, environment_file='environment.yml'):
         self.environment_file = environment_file
@@ -38,7 +40,7 @@ class RoleBuilder():
 
     def get_riak_attributes(self):
         try:
-            return self.env_dict['riak']
+            return self.env_dict['riakcs_cluster']
         except:
             return None
 
@@ -58,8 +60,22 @@ class RoleBuilder():
         roles = self._initialize_roles()
         euca_attributes = self.get_euca_attributes()
         ceph_attributes = self.get_ceph_attributes()
+        riak_attributes = self.get_riak_attributes()
 
         roles['all'] = set([])
+
+        if riak_attributes:
+            riak_topology = riak_attributes['topology']
+            if riak_topology['head']:
+                roles['riak-head'] = set([riak_topology['head']['ipaddr']])
+                roles['all'].add(riak_topology['head']['ipaddr'])
+            else:
+                raise Exception("No head node found for RiakCS cluster!")
+
+            if riak_topology.get('nodes'):
+                for n in riak_topology['nodes']:
+                    roles['riak-node'].add(n)
+                    roles['all'].add(n)
 
         if ceph_attributes:
             ceph_topology = ceph_attributes['topology']

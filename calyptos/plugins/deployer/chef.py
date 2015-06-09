@@ -102,6 +102,12 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(mon_bootstrap, self._get_recipe_list('mon-bootstrap'))
             self._run_chef_on_hosts(mon_bootstrap)
 
+        if self.roles['riak-head']:
+            riak_head = self.roles['riak-head']
+            self.chef_manager.clear_run_list(self.all_hosts)
+            self.chef_manager.add_to_run_list(riak_head, self._get_recipe_list('riak-head'))
+            self._run_chef_on_hosts(riak_head)
+
         if self.roles['clc']:
             self.chef_manager.clear_run_list(self.all_hosts)
             clc = self.roles['clc']
@@ -117,6 +123,11 @@ class Chef(DeployerPlugin):
                                               self._get_recipe_list(component_name))
         self._run_chef_on_hosts(self.all_hosts)
 
+        if self.roles['riak-head']:
+            riak_head = self.roles['riak-head']
+            self.chef_manager.add_to_run_list(riak_head, ['riakcs-cluster::plancommit', 'riakcs-cluster::mergecreds'])
+            self._run_chef_on_hosts(riak_head)
+
         if self.roles['clc']:
             clc = self.roles['clc']
             self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
@@ -129,6 +140,9 @@ class Chef(DeployerPlugin):
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
-        self.chef_manager.add_to_run_list(self.all_hosts, ['eucalyptus::nuke'])
+        if self.roles['clc']:
+            self.chef_manager.add_to_run_list(self.all_hosts, ['eucalyptus::nuke'])
+        if self.roles['riak-head']:
+            self.chef_manager.add_to_run_list(self.all_hosts, ['riakcs-cluster::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
         self.chef_manager.clear_run_list(self.all_hosts)
