@@ -133,7 +133,15 @@ setup(
             'file_permissions = eucadeploy.plugins.debugger.'
             'file_permissions:FilePermissions',
             'eucalyptus_sosreports = eucadeploy.plugins.debugger.'
-            'eucalyptus_sosreports:EucalyptusSosReports'
+            'eucalyptus_sosreports:EucalyptusSosReports',
+            'component_storage_check = eucadeploy.plugins.debugger.'
+            'component_storage_check:CheckStorage',
+            'debug_compute_req = eucadeploy.plugins.debugger.'
+            'debug_compute_req:CheckComputeRequirements',
+            'verify_component_networking = eucadeploy.plugins.debugger.'
+            'verify_component_networking:VerifyComponentNetworking',
+            'verify_networking = eucadeploy.plugins.debugger.'
+            'verify_networking:VerifyConnectivity'
         ]
     },
     cmdclass={

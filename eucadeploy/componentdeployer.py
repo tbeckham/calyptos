@@ -34,8 +34,9 @@ class ComponentDeployer():
         else:
             # No walrus defined assuming RiakCS
             roles['walrus'] = set()
+        # Create role for each cluster
+        roles['cluster'] = {}
         for name in topology['clusters']:
-            roles['cluster'] = {}
             if 'cc-1' in topology['clusters'][name]:
                 cc = topology['clusters'][name]['cc-1']
                 roles['cluster-controller'].add(cc)

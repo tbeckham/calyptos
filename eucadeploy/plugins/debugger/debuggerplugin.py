@@ -6,12 +6,13 @@ from fabric.decorators import task
 from fabric.operations import run, get, settings
 from fabric.state import env
 from fabric.tasks import execute
+from fabric.network import disconnect_all
 import six
 
 
 @six.add_metaclass(abc.ABCMeta)
 class DebuggerPlugin(object):
-    #Base class for example plugin used in the tutorial.
+    #Base class for Debugger Plugin
 
     def __init__(self, component_deployer):
         self.passed = 0
@@ -25,7 +26,13 @@ class DebuggerPlugin(object):
         print cyan(self.message_style.format('DEBUG STARTING', self.name))
 
     def __del__(self):
-        self.report()
+        try:
+            disconnect_all()
+        except Exception as e:
+            message = "Failed to disconnect from all hosts - " + e.message
+            print red(self.message_style.format('DISCONNECT FAILED', message))
+        finally:
+            self.report()
 
     def success(self, message):
         # Function to display and tally success of a debug step

@@ -8,12 +8,14 @@ class CheckPorts(DebuggerPlugin):
         with hide('everything'):
             ports = self.run_command_on_hosts('netstat -lnp', all_hosts)
         roles = self.component_deployer.get_roles()
-        clc_ports = {'tcp': [8773, 8777, 53, 8443, 8779],
-                     'udp': [53, 7500, 18778]}
+        clc_ports = {'tcp': [8773, 8777, 8443, 8779],
+                     'udp': [7500, 8773, 8778, 18778]}
+        ufs_ports = {'tcp': [53, 8773, 8779],
+                    'udp': [53, 7500, 8773, 8778, 18778]}
         cc_ports = {'tcp': [8774],
                     'udp': []}
-        sc_ports = {'tcp': [8773],
-                    'udp': []}
+        sc_ports = {'tcp': [8773, 8779],
+                    'udp': [7500, 8778, 8773, 18778]}
         nc_ports = {'tcp': [8775],
                     'udp': []}
         def check_port_map(port_map):
@@ -25,6 +27,8 @@ class CheckPorts(DebuggerPlugin):
             closed_ports = []
             if host in roles['clc']:
                 check_port_map(clc_ports)
+            if host in roles['user-facing']:
+                check_port_map(ufs_ports)
             if host in roles['cluster-controller']:
                 check_port_map(cc_ports)
             if host in roles['storage-controller']:
