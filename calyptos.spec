@@ -69,9 +69,7 @@ Provisions the rest of the system or update the configuration of an existing sys
 ### Debug
 #### Not yet implemented!!!
 This step will grab all necessary information from a system in order to provide artifacts for use in debugging a problem.
-    
-    
-    
+
 
 
 %prep
@@ -81,7 +79,7 @@ This step will grab all necessary information from a system in order to provide 
 %{__python2} setup.py build
 
 %install
-%{__python2} setup.py install --skip-build --root=$RPM_BUILD_ROOT
+%{__python2} setup.py install --skip-build --root=$RPM_BUILD_ROOT --single-version-externally-managed
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -89,7 +87,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 /usr/bin/calyptos
-%{python_sitelib}/eucadeploy/*
+%{python_sitelib}/calyptos/*
 %{python_sitelib}/*.egg-info
-%config /etc/calyptos/config.yml
+/usr/share/calyptos/config.yml
 /usr/share/calyptos/examples/*

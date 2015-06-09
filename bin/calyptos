@@ -3,8 +3,50 @@ import argparse
 from fabric.colors import yellow
 from stevedore import driver, extension
 from calyptos.rolebuilder import RoleBuilder
+import os
+import shutil
+
+dot_dir = os.path.expanduser('~/.calyptos')
+# by default we look in users home dir first
+default_cfgfile = os.path.join(dot_dir, "config.yml")
+cfglist = []
+cfglist.append(default_cfgfile)
+cfglist.append('/usr/share/calyptos/config.yml')
+
+def locate_cfgfile():
+    # if we find that the config file is in /usr/share
+    # but the rpm is not installed, we copy it to ~/.calyptos
+    # because that means calyptos was installed by setup.py
+    for item in cfglist:
+        if os.path.isfile(item):
+            if item != default_cfgfile:
+                import rpm # I think this is required by other parts of python so I'm safe using it
+                ts = rpm.TransactionSet()
+                mi = ts.dbMatch("name","calyptos")
+                if (len(mi) == 0):
+                    if not os.path.isfile(default_cfgfile):
+                        if not os.path.exists(dot_dir):
+                            try:
+                                os.makedirs(dot_dir)
+                            except OSError as e:
+                                print('Error: cannot create directory ~/.calyptos: %s' % e)
+                        try:
+                            # if this copy works, return default_cfgfile
+                            # because it will be used going forward
+                            shutil.copy('/usr/share/calyptos/config.yml', default_cfgfile)
+                            return default_cfgfile
+                        except shutil.Error as e:
+                            print('Error: %s' % e)
+                        except IOError as e:
+                            print('Error: %s' % e.strerror)
+            # this is not in an else: block because its a
+            # last resort for the case where import rpm
+            # doesn't succeed above, because we still need
+            # to return a valid config file name
+            return item
 
 if __name__ == '__main__':
+    cfgfile = locate_cfgfile()
     parser = argparse.ArgumentParser()
     default_repo = 'https://github.com/eucalyptus/eucalyptus-cookbook'
     parser.add_argument('operation', choices=['validate',
@@ -13,7 +55,7 @@ if __name__ == '__main__':
                                               'provision',
                                               'debug',
                                               'uninstall'])
-    parser.add_argument('-c', '--config', default='etc/config.yml')
+    parser.add_argument('-c', '--config', default=cfgfile)
     parser.add_argument('-e', '--environment', default='etc/environment.yml')
     parser.add_argument('-p', '--password', default='foobar')
     parser.add_argument('-b', '--branch', default='euca-4.2')
