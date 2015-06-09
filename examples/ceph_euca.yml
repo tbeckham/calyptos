@@ -1,0 +1,56 @@
+
+---
+name: ceph-cluster
+description: 4.1 EDGE Testing
+default_attributes:
+  ceph:
+    config:
+      fsid: "6d7dca16-152c-4401-a93f-88dc916540d2"
+    topology:
+      mon_bootstrap: {ipaddr: "10.111.5.164", hostname: "g-15-09"}
+      mons:
+        - {ipaddr: "10.111.5.127", hostname: "g-26-07"}
+      osds:
+        - {ipaddr: "10.111.5.198", hostname: "b-35"}
+        - {ipaddr: "10.111.5.24", hostname: "h-24"}
+  eucalyptus:
+    topology:
+      clc-1: 10.111.5.24
+      walrus: 10.111.5.24
+      user-facing:
+      - 10.111.5.24
+      clusters:
+        one:
+          cc-1: 10.111.5.24
+          sc-1: 10.111.5.24
+          storage-backend: das
+          das-device: vg01
+          nodes: 10.111.5.127
+    nc:
+      max-cores: 128
+      cache-size: 11000
+      work-size: 160000
+    network:
+      mode: EDGE
+      config-json:
+        InstanceDnsServers:
+        - 10.111.5.24
+        PublicIps:
+        - 10.111.52.11-10.111.52.20
+        Clusters:
+        - Name: one
+          Subnet:
+            Subnet: 172.32.192.0
+            Netmask: 255.255.255.0
+            Name: 172.32.192.0
+            Gateway: 172.32.192.1
+      public-interface: br0
+      private-interface: br0
+      bridge-interface: br0
+      bridged-nic: em1
+    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/scripts/network-interfaces.sh
+    eucalyptus-repo: http://packages.release.eucalyptus-systems.com/yum/tags/eucalyptus-devel/centos/6/x86_64/
+    euca2ools-repo: http://packages.release.eucalyptus-systems.com/yum/tags/euca2ools-devel/centos/6/x86_64/
+    yum-options: "--nogpg"
+override_attributes: {}
+cookbook_versions: {}
