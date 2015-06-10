@@ -1,56 +1,68 @@
 
 ---
-name: ceph-cluster
-description: 4.1 EDGE Testing
+name: ceph_euca_system
+description: 4.1 Ceph and Euca Testing
 default_attributes:
   ceph:
     config:
-      fsid: "6d7dca16-152c-4401-a93f-88dc916540d2"
+      fsid: "0f2c3880-b92d-4bcb-b50a-b644bfc40be6"
     topology:
-      mon_bootstrap: {ipaddr: "10.111.5.164", hostname: "g-15-09"}
-      mons:
-        - {ipaddr: "10.111.5.127", hostname: "g-26-07"}
+      mon_bootstrap: {ipaddr: "10.111.1.100", hostname: "d-30"}
       osds:
-        - {ipaddr: "10.111.5.198", hostname: "b-35"}
-        - {ipaddr: "10.111.5.24", hostname: "h-24"}
+        - {ipaddr: "10.111.5.157", hostname: "g-12-05"}
+        - {ipaddr: "10.111.1.177", hostname: "g-05-05"}
   eucalyptus:
+    system-properties:
+      one.storage.cephconfigfile: /etc/ceph/ceph.conf
+      one.storage.cephkeyringfile: /etc/ceph/ceph.client.admin.keyring
+      one.storage.cephsnapshotpools: rbd
+      one.storage.cephuser: admin
+      one.storage.cephvolumepools: rbd
     topology:
-      clc-1: 10.111.5.24
-      walrus: 10.111.5.24
+      clc-1: 10.111.1.40
+      walrus: 10.111.1.40
       user-facing:
-      - 10.111.5.24
+      - 10.111.1.40
       clusters:
         one:
-          cc-1: 10.111.5.24
-          sc-1: 10.111.5.24
-          storage-backend: das
-          das-device: vg01
-          nodes: 10.111.5.127
+          cc-1: 10.111.1.40
+          sc-1: 10.111.1.40
+          storage-backend: ceph-rbd
+          nodes: 10.111.1.51
     nc:
-      max-cores: 128
-      cache-size: 11000
-      work-size: 160000
+      max-cores: 8
     network:
       mode: EDGE
+      nc-router: N
       config-json:
         InstanceDnsServers:
-        - 10.111.5.24
+        - 10.111.1.40
         PublicIps:
-        - 10.111.52.11-10.111.52.20
+        - 10.111.31.104
+        - 10.111.31.105
         Clusters:
         - Name: one
+          PrivateIps:
+          - 10.111.75.146
+          - 10.111.75.147
           Subnet:
-            Subnet: 172.32.192.0
-            Netmask: 255.255.255.0
-            Name: 172.32.192.0
-            Gateway: 172.32.192.1
+            Subnet: 10.111.0.0
+            Netmask: 255.255.0.0
+            Name: 10.111.0.0
+            Gateway: 10.111.0.1
       public-interface: br0
       private-interface: br0
       bridge-interface: br0
       bridged-nic: em1
-    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/scripts/network-interfaces.sh
-    eucalyptus-repo: http://packages.release.eucalyptus-systems.com/yum/tags/eucalyptus-devel/centos/6/x86_64/
+    install-type: packages
+    log-level: DEBUG
+    install-imaging-worker: 'false'
+    install-load-balancer: 'false'
+    default-img-url: http://images.walrus.cloud.qa1.eucalyptus-systems.com:8773/precise-server-cloudimg-amd64-disk1.img
+    enterprise-repo: http://packages.release.eucalyptus-systems.com/yum/tags/enterprise-devel/centos/6/x86_64/
     euca2ools-repo: http://packages.release.eucalyptus-systems.com/yum/tags/euca2ools-devel/centos/6/x86_64/
+    eucalyptus-repo: http://packages.release.eucalyptus-systems.com/yum/tags/eucalyptus-devel/centos/6/x86_64/
+    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/deploy-helpers/scripts/network-interfaces.sh
     yum-options: "--nogpg"
 override_attributes: {}
 cookbook_versions: {}
