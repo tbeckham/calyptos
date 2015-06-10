@@ -106,7 +106,7 @@ class RoleBuilder():
 
             # Add CLC
             roles['clc'] = set([topology['clc-1']])
-            roles['all'] = set([topology['clc-1']])
+            roles['all'].add(topology['clc-1'])
 
             # Add UFS
             roles['user-facing'] = set(topology['user-facing'])
