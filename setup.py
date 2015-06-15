@@ -87,7 +87,8 @@ setup(
     packages=find_packages(),
     test_suite='nose.collector',
     tests_require=['nose'],
-    install_requires=['fabric', 'PyYaml', 'argparse', 'stevedore', 'sphinx'],
+    install_requires=['fabric', 'PyYaml', 'argparse', 'stevedore', 'sphinx',
+                      'click'],
     scripts=['bin/calyptos'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
