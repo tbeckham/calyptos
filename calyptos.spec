@@ -23,7 +23,7 @@ Url: https://github.com/eucalyptus/calyptos/
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: fabric PyYAML git python-stevedore
+Requires: fabric PyYAML git python-stevedore python-click
 
 %description
 # Calyptos
