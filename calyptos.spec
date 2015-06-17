@@ -5,7 +5,7 @@
 %define version 0.1
 %define unmangled_version 0.1
 %define unmangled_version 0.1
-%define release 1
+%define release 1%{?build_id:.%build_id}%{?dist}
 
 Summary: Tool for managing Eucalyptus
 Name: %{name}
@@ -23,7 +23,7 @@ Url: https://github.com/eucalyptus/calyptos/
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
 
-Requires: fabric PyYAML git python-stevedore
+Requires: fabric PyYAML git python-stevedore python-click
 
 %description
 # Calyptos
