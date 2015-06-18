@@ -27,7 +27,7 @@ def locate_cfgfile():
             if item != default_cfgfile:
                 import rpm # I think this is required by other parts of python so I'm safe using it
                 ts = rpm.TransactionSet()
-                mi = ts.dbMatch("name","calyptos")
+                mi = ts.dbMatch("name", "calyptos")
                 if (len(mi) == 0):
                     if not os.path.isfile(default_cfgfile):
                         if not os.path.exists(dot_dir):
@@ -67,7 +67,7 @@ def run_driver(namespace, driver, operation, ctx):
 @click.option('-c', '--config', default=locate_cfgfile(), show_default=True, help='Path to the configuration file for Calyptos')
 @click.option('-e', '--environment', required=True, help='Path to the environment file that defines the system Calyptos will interact with')
 @click.option('-p', '--password', prompt='Enter the SSH password for hosts in the deployment', help='SSH password for machines that Calyptos will interact with')
-@click.option('--debug', default=False)
+@click.option('--debug', is_flag=True)
 @click.group()
 @click.pass_context
 def cli(ctx, config, environment, password, debug):
