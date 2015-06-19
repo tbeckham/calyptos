@@ -11,6 +11,7 @@ from calyptos.rolebuilder import RoleBuilder
 import os
 import sys
 import shutil
+import platform
 
 dot_dir = os.path.expanduser('~/.calyptos')
 # by default we look in users home dir first
@@ -30,31 +31,34 @@ def locate_cfgfile():
     # but the rpm is not installed, we copy it to ~/.calyptos
     # because that means calyptos was installed by setup.py
     for item in cfglist:
-        mi = None
         if os.path.isfile(item):
             if item != default_cfgfile:
-                try:
-                    import rpm
+                if platform.system() == "Linux":
+                    try:
+                        import rpm # I think this is required by
+                                   # other parts of python so I'm safe using it
+                    except ImportError:
+                        # if we can't import the rpm module
+                        # we will just return the /usr/share cfgfile
+                        return item
                     ts = rpm.TransactionSet()
-                    mi = ts.dbMatch("name", "calyptos")
-                except ImportError as IE:
-                    sys.stderr.write("IMPORT ERROR: {0}\n".format(IE))
-                if mi is None or (len(mi) == 0):
-                    if not os.path.isfile(default_cfgfile):
-                        if not os.path.exists(dot_dir):
+                    mi = ts.dbMatch("name","calyptos")
+                    if (len(mi) == 0):
+                        if not os.path.isfile(default_cfgfile):
+                            if not os.path.exists(dot_dir):
+                                try:
+                                    os.makedirs(dot_dir)
+                                except OSError as e:
+                                    print('Error: cannot create directory ~/.calyptos: %s' % e)
                             try:
-                                os.makedirs(dot_dir)
-                            except OSError as e:
-                                print('Error: cannot create directory ~/.calyptos: %s' % e)
-                        try:
-                            # if this copy works, return default_cfgfile
-                            # because it will be used going forward
-                            shutil.copy('/usr/share/calyptos/config.yml', default_cfgfile)
-                            return default_cfgfile
-                        except shutil.Error as e:
-                            print('Error: %s' % e)
-                        except IOError as e:
-                            print('Error: %s' % e.strerror)
+                                # if this copy works, return default_cfgfile
+                                # because it will be used going forward
+                                shutil.copy('/usr/share/calyptos/config.yml', default_cfgfile)
+                                return default_cfgfile
+                            except shutil.Error as e:
+                                print('Error: %s' % e)
+                            except IOError as e:
+                                print('Error: %s' % e.strerror)
             # this is not in an else: block because its a
             # last resort for the case where import rpm
             # doesn't succeed above, because we still need
