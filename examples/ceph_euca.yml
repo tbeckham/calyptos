@@ -7,10 +7,14 @@ default_attributes:
     config:
       fsid: "0f2c3880-b92d-4bcb-b50a-b644bfc40be6"
     topology:
-      mon_bootstrap: {ipaddr: "10.111.1.100", hostname: "d-30"}
+      mon_bootstrap:
+        ipaddr: "10.111.5.43"
+        hostname: "a-01"
       osds:
-        - {ipaddr: "10.111.5.157", hostname: "g-12-05"}
-        - {ipaddr: "10.111.1.177", hostname: "g-05-05"}
+        - ipaddr: "10.111.5.160"
+          hostname: "g-12-10"
+        - ipaddr: "10.111.1.213"
+          hostname: "b-23"
   eucalyptus:
     system-properties:
       one.storage.cephconfigfile: /etc/ceph/ceph.conf
