@@ -144,5 +144,7 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(self.all_hosts, ['eucalyptus::nuke'])
         if self.roles['riak-head']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['riakcs-cluster::nuke'])
+        if self.roles['mon-bootstrap']:
+            self.chef_manager.add_to_run_list(self.all_hosts, ['ceph-cluster::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
         self.chef_manager.clear_run_list(self.all_hosts)
