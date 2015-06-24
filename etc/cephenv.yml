@@ -10,10 +10,21 @@ default_attributes:
     config:
       fsid: "6d7dca16-152c-4401-a93f-88dc916540d2"
     topology:
-      mon_bootstrap: {ipaddr: "10.111.5.164", hostname: "g-15-09"}
+      mon_bootstrap:
+        ipaddr: "10.10.1.01"
+        hostname: "host-01"
       mons:
-        - {ipaddr: "10.111.5.127", hostname: "g-26-07"}
+        - ipaddr: "10.10.1.02"
+          hostname: "host-02"
       osds:
-        - {ipaddr: "10.111.5.198", hostname: "b-35"}
-        - {ipaddr: "10.111.5.24", hostname: "h-24"}
+        - ipaddr: "10.10.1.03"
+          hostname: "host-03"
+          drive:
+            - "/dev/sdb"
+            - "/dev/sdc"
+        - ipaddr: "10.10.1.04"
+          hostname: "host-04"
+          drive:
+            - "/dev/sdb"
+            - "/dev/sdc"
 override_attributes: {}
