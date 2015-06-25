@@ -46,3 +46,5 @@ deployer:
         - riak-cs
         - riakcs-cluster::join
         - riakcs-cluster::mergecreds
+      - haproxy:
+        - haproxy::default

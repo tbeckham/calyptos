@@ -17,6 +17,8 @@ class RoleBuilder():
                  'ceph-osds',
                  'riak-head',
                  'riak-node',
+                 'haproxy',
+                 'nginx',
                  'all']
 
     def __init__(self, environment_file='environment.yml'):
@@ -76,6 +78,17 @@ class RoleBuilder():
                 for n in riak_topology['nodes']:
                     roles['riak-node'].add(n)
                     roles['all'].add(n)
+            if riak_topology.get('load_balancer'):
+                riak_lb = None
+                if self.env_dict.get('nginx'):
+                    riak_lb = 'nginx'
+                    raise Exception("Nginx: Not implemented yet.")
+                elif self.env_dict.get('haproxy'):
+                    riak_lb = 'haproxy'
+                else:
+                    raise Exception("No Load-Balancer found for RiakCS cluster.")
+                roles[riak_lb] = set([riak_topology['load_balancer']])
+                roles['all'].add(riak_topology['load_balancer'])
 
         if ceph_attributes:
             ceph_topology = ceph_attributes['topology']
