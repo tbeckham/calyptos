@@ -1,0 +1,102 @@
+
+---
+name: riak_euca_system
+description: 4.1 Ceph and Euca Testing
+default_attributes:
+  riak_cs:
+    config:
+      riak_cs:
+        anonymous_user_creation: true
+        fold_objects_for_list_keys: true
+        admin_key": "admin-key"
+        admin_secret": "admin-secret"
+        cs_port: 8080
+  riak:
+    config:
+      riak_kv:
+        storage_backend: "riak_cs_kv_multi_backend"
+  sysctl:
+    params:
+      net.core.wmem_default: "8388608"
+      net.core.rmem_default: "8388608"
+      net.core.wmem_max: "8388608"
+      net.core.rmem_max: "8388608"
+      net.core.netdev_max_backlog: "10000"
+  haproxy:
+    incoming_port: 80
+    members:
+      - "server host-01 10.10.1.1:8080 weight 1 maxconn 256000 check"
+      - "server host-02 10.10.1.2:8080 weight 1 maxconn 256000 check"
+      - "server host-03 10.10.1.3:8080 weight 1 maxconn 256000 check"
+  riakcs_cluster:
+    topology:
+      head:
+        ipaddr: "10.10.1.1"
+        fqdn: "host-01.eucalyptus-systems.com"
+      stanchion_ip: "10.10.1.1"
+      stanchion_port: 8085
+      load_balancer: "10.10.1.2"
+      nodes:
+      - "10.10.1.2"
+      - "10.10.1.3"
+  eucalyptus:
+    topology:
+      clc-1: 10.10.1.4
+      user-facing:
+      - 10.10.1.4
+      clusters:
+        one:
+          cc-1: 10.10.1.4
+          sc-1: 10.10.1.4
+          storage-backend: das
+          das-device: vg01
+          nodes: 10.10.1.5
+    nc:
+      max-cores: 8
+    network:
+      mode: EDGE
+      nc-router: N
+      config-json:
+        InstanceDnsServers:
+        - 10.10.1.4
+        PublicIps:
+        - 10.10.2.1
+        - 10.10.2.2
+        - 10.10.2.3
+        - 10.10.2.4
+        - 10.10.2.5
+        - 10.10.2.6
+        - 10.10.2.7
+        - 10.10.2.8
+        Clusters:
+        - Name: one
+          PrivateIps:
+          - 10.10.3.1
+          - 10.10.3.2
+          - 10.10.3.3
+          - 10.10.3.4
+          - 10.10.3.5
+          - 10.10.3.6
+          - 10.10.3.7
+          - 10.10.3.8
+          Subnet:
+            Subnet: 10.10.0.0
+            Netmask: 255.255.0.0
+            Name: 10.10.0.0
+            Gateway: 10.10.0.1
+      public-interface: br0
+      private-interface: br0
+      bridge-interface: br0
+      bridged-nic: em1
+    install-type: packages
+    log-level: DEBUG
+    install-imaging-worker: 'true'
+    install-load-balancer: 'true'
+    default-img-url: http://images.walrus.cloud.qa1.eucalyptus-systems.com:8773/precise-server-cloudimg-amd64-disk1.img
+    enterprise-repo: http://packages.release.eucalyptus-systems.com/yum/tags/enterprise-devel/centos/6/x86_64/
+    euca2ools-repo: http://packages.release.eucalyptus-systems.com/yum/tags/euca2ools-devel/centos/6/x86_64/
+    eucalyptus-repo: http://packages.release.eucalyptus-systems.com/yum/tags/eucalyptus-devel/centos/6/x86_64/
+    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/deploy-helpers/scripts/network-interfaces.sh
+    yum-options: "--nogpg"
+override_attributes: {}
+cookbook_versions: {}
