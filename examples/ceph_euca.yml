@@ -60,8 +60,8 @@ default_attributes:
       bridged-nic: em1
     install-type: packages
     log-level: DEBUG
-    install-imaging-worker: 'false'
-    install-load-balancer: 'false'
+    install-imaging-worker: 'true'
+    install-load-balancer: 'true'
     default-img-url: http://images.walrus.cloud.qa1.eucalyptus-systems.com:8773/precise-server-cloudimg-amd64-disk1.img
     enterprise-repo: http://packages.release.eucalyptus-systems.com/yum/tags/enterprise-devel/centos/6/x86_64/
     euca2ools-repo: http://packages.release.eucalyptus-systems.com/yum/tags/euca2ools-devel/centos/6/x86_64/
