@@ -38,7 +38,7 @@ default_attributes:
       private-interface: br0
       bridge-interface: br0
       bridged-nic: em1
-    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/scripts/network-interfaces.sh
+    init-script-url: http://git.qa1.eucalyptus-systems.com/qa-repos/eucalele/raw/master/deploy-helpers/scripts/network-interfaces.sh
     eucalyptus-repo: http://packages.release.eucalyptus-systems.com/yum/tags/eucalyptus-devel/centos/6/x86_64/
     euca2ools-repo: http://packages.release.eucalyptus-systems.com/yum/tags/euca2ools-devel/centos/6/x86_64/
     yum-options: "--nogpg"
