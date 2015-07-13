@@ -7,7 +7,7 @@ class RoleBuilder():
     ROLE_LIST = ['clc',
                  'user-facing',
                  'walrus',
-                 'midonet-gw',
+                 'midonet-api',
                  'cluster-controller',
                  'storage-controller',
                  'node-controller',
@@ -164,12 +164,12 @@ class RoleBuilder():
             if midokura_attributes and euca_attributes['network']['mode'] == 'VPCMIDO':
                 try:
                     mido = euca_attributes['network']['config-json']['Mido']
-                    mido_gw_hostname = mido.get('GatewayHost', None)
+                    mido_gw_hostname = mido.get('EucanetdHost', None)
                     midolman_host_mapping = midokura_attributes.get('midolman-host-mapping', None)
                     if midolman_host_mapping:
-                        mido_gw_ip = midolman_host_mapping.get(mido_gw_hostname, None)
+                        mido_api_ip = midolman_host_mapping.get(mido_gw_hostname, None)
                         # Add the host IP for the midonet gw
-                        roles['midonet-gw'].add(mido_gw_ip)
+                        roles['midonet-api'].add(mido_api_ip)
                         # Add hosts from the midonet host mapping, and all nodes
                         for hostname, host_ip in midolman_host_mapping.iteritems():
                             roles['midolman'].add(host_ip)
@@ -177,5 +177,5 @@ class RoleBuilder():
                             roles['midolman'].add(node)
                 except KeyError:
                     roles['midolman'] = roles['node-controller']
-                    roles['midonet-gw'] = roles['clc']
+                    roles['midonet-api'] = roles['clc']
         return roles
