@@ -108,6 +108,11 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(riak_head, self._get_recipe_list('riak-head'))
             self._run_chef_on_hosts(riak_head)
 
+        if self.roles['midolman']:
+            midolman_hosts = self.roles['midolman']
+            self.chef_manager.add_to_run_list(midolman_hosts, ['midokura::midolman'])
+            self._run_chef_on_hosts(midolman_hosts)
+
         if self.roles['clc']:
             self.chef_manager.clear_run_list(self.all_hosts)
             clc = self.roles['clc']
@@ -133,10 +138,10 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
             self._run_chef_on_hosts(clc)
             if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
-                midonet_gw = self.roles['midonet-gw']
+                midonet_api = self.roles['midonet-api']
                 create_resources = 'midokura::create-first-resources'
-                self.chef_manager.add_to_run_list(midonet_gw, [create_resources])
-                self._run_chef_on_hosts(midonet_gw)
+                self.chef_manager.add_to_run_list(midonet_api, [create_resources])
+                self._run_chef_on_hosts(midonet_api)
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
