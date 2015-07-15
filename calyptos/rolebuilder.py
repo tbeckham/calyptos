@@ -28,7 +28,8 @@ class RoleBuilder():
         self.all_hosts = self.roles['all']
 
     def read_environment(self):
-        return yaml.load(open(self.environment_file).read())
+        with open(self.environment_file) as env_file:
+            return yaml.load(env_file.read())
 
     def get_all_attributes(self):
         env_dicts = self.read_environment()
