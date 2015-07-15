@@ -7,9 +7,9 @@ from fabric.state import env
 from fabric.tasks import execute as fabric_execute
 from stevedore import driver as plugin_driver
 from stevedore import extension
-import sys
 from calyptos.rolebuilder import RoleBuilder
 import os
+import sys
 import shutil
 
 dot_dir = os.path.expanduser('~/.calyptos')
@@ -229,6 +229,11 @@ if __name__ == '__main__':
     # When using subparsers the parent only prints usage, print_help is more useful...
     parser.print_usage = parser.print_help
     try:
+        import argcomplete
+        argcomplete.autocomplete(parser)
+    except:
+        pass
+    try:
         argp = parser.parse_args()
     except Exception as PE:
         parser.print_help()
@@ -242,7 +247,8 @@ if __name__ == '__main__':
         do_help()
         exit(0)
     # Map the subcommand to a function for the underlying operation to be executed...
-    sub_commands = {'prepare': prepare,
+    sub_commands = {'validate': validate,
+                    'prepare': prepare,
                     'bootstrap': bootstrap,
                     'provision': provision,
                     'execute': execute,
