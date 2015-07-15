@@ -240,8 +240,6 @@ if __name__ == '__main__':
         print str(PE)
         exit(1)
 
-    for name, value in argp.__dict__.iteritems():
-        print 'argname:"{0} -> value:"{1}"'.format(name, value)
     sub_command_name = argp.command
     if sub_command_name == 'help':
         do_help()
