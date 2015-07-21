@@ -130,7 +130,7 @@ def execute(argp, command=None, role=None):
     Execute a `task` honoring host/roles, etc.
     """
     role = role or argp.role
-    command = command or argp.command
+    command = command or argp.execute_command
     component_deployer = RoleBuilder(argp.environment)
     env.hosts = component_deployer.roles[role]
     env.password = argp.password
@@ -226,7 +226,7 @@ if __name__ == '__main__':
     help_subp.print_usage = help_subp.print_help
     # Add the subparser for execute which accepts different args than the other options...
     execute_subp = add_subparser(subparsers, execute, branch=None, cookbook_repo=None, driver=None)
-    execute_subp.add_argument('EXECUTE_COMMAND', metavar='EXECUTE_COMMAND',
+    execute_subp.add_argument('execute_command', metavar='EXECUTE_COMMAND',
                               help='Command to run against role members')
     execute_subp.add_argument('-r', '--role', default='all', help='role')
 
