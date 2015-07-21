@@ -37,7 +37,7 @@ class Chef(DeployerPlugin):
                   '{0} eucalyptus-cookbook;'
                   'fi'.format(repo))
             local('cd eucalyptus-cookbook; git checkout {0};'.format(branch))
-            local('cd eucalyptus-cookbook; git pull;')
+            local('cd eucalyptus-cookbook; git pull origin {0};'.format(branch))
         ChefManager.download_cookbooks('eucalyptus-cookbook/Berksfile',
                                        os.path.join(self.chef_repo_dir +
                                                     '/cookbooks'),
