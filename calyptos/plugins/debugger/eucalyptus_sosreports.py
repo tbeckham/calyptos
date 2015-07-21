@@ -7,14 +7,23 @@ from fabric.tasks import execute
 from fabric.context_managers import hide
 import re
 from datetime import datetime
-from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
+from eucadeploy.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 
 
 class EucalyptusSosReports(DebuggerPlugin):
     def debug(self):
-        all_hosts = self.component_deployer.all_hosts
         roles = self.component_deployer.get_roles()
+
+        # Create set of Eucalytpus only componnents
+        euca_components = ['user-facing', 'cluster-controller',
+                           'storage-controller', 'node-controller']
+        if roles['walrus']:
+            euca_components.append('walrus')
+
+        all_hosts = roles['clc']
+        for component in euca_components:
+            all_hosts.update(roles[component]) 
         """
         Check to make sure sos and eucalyptus-sos-plugins
         packages are installed
