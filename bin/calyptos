@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS, _SubParsersAction
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, SUPPRESS
 from fabric.colors import yellow
 from fabric.network import disconnect_all
 from fabric.operations import run as fabric_run
@@ -172,7 +172,6 @@ def add_subparser(subparsers, func, title=None, helpstr=None,
     Add a subparser to the main/parent argparser. This will handle arguements for the
     matching driver operations
     """
-    assert isinstance(subparsers, _SubParsersAction)
     helpstr = helpstr or func.func_doc
     title = title or func.func_name
     myparser = subparsers.add_parser(title,
@@ -186,7 +185,7 @@ def add_subparser(subparsers, func, title=None, helpstr=None,
     if driver:
         myparser.add_argument('-d', '--driver', default=driver, help='driver')
     if environment:
-        myparser.add_argument('-e', '--environment', default=None,
+        myparser.add_argument('-e', '--environment', default=None, required=True,
                               help='Path to the environment file that defines the system Calyptos '
                                    'will interact with')
     if password:
@@ -266,19 +265,16 @@ if __name__ == '__main__':
                            .format(sub_command_name,
                                    ", ".join(str(x) for x in sub_commands.iterkeys())))
 
+    if hasattr(argp, 'environment'):
+        # Test if the provided environment file is present and readable...
+        with open(argp.environment) as envfile:
+            pass
     # If the sub parser requested a password and it wasnt provided, prompt the user for it...
     if hasattr(argp, 'password') and argp.password is None:
         password = raw_input('\n\tEnter the SSH password for hosts in the deployment: ')
         setattr(argp, 'password', str(password).strip())
 
-    if hasattr(argp, 'environment'):
-        if not argp.environment:
-            raise ValueError('Environment yaml file not provided, use -e or --environment to '
-                             'provide a local path')
-        # Test if the provided environment file is present and readable...
-        with open(argp.environment) as envfile:
-            pass
-
     # Finally execute the requested operation's function
     sub_command(argp)
+    disconnect_all()
     exit(0)
