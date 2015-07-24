@@ -25,7 +25,13 @@ class DebuggerPlugin(object):
         print cyan(self.message_style.format('DEBUG STARTING', self.name))
 
     def __del__(self):
-        self.report()
+        try:
+            disconnect_all()
+        except Exception as e:
+            message = "Failed to disconnect from all hosts - " + e.message
+            print red(self.message_style.format('DISCONNECT FAILED', message))
+        finally:
+            self.report()
 
     def success(self, message):
         # Function to display and tally success of a debug step
