@@ -154,4 +154,4 @@ class Chef(DeployerPlugin):
         if self.roles['haproxy']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['haproxy::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
-        self.chef_manager.clear_run_list(self.all_hosts)
+        local('rm -rf ./chef-repo/nodes/*')
