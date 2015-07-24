@@ -4,7 +4,7 @@ from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 class DebugClusterController(DebuggerPlugin):
     def debug(self):
-        ccs = self.role_builder.roles['cluster-controller']
+        ccs = self.component_deployer.roles['cluster-controller']
         ### Collect information
         with hide('everything'):
             cc_service_state = self.run_command_on_hosts('service eucalyptus-cc status', hosts=ccs)

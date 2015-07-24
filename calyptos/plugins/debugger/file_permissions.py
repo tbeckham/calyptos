@@ -11,7 +11,7 @@ class FilePermissions(DebuggerPlugin):
                                     '/var/log/eucalyptus'],
                         'root': []}
 
-        for host in all_euca_hosts:
+        for host in euca_hosts:
             self._check_file_owner(host, common_files)
             if host in roles['clc']:
                 pass

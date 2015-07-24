@@ -4,7 +4,7 @@ from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 class DebugNodeController(DebuggerPlugin):
     def debug(self):
-        nodes = self.role_builder.roles['node-controller']
+        nodes = self.component_deployer.roles['node-controller']
         # Collect information
         with hide('everything'):
             nc_service_state = self.run_command_on_hosts('service eucalyptus-nc status', hosts=nodes)

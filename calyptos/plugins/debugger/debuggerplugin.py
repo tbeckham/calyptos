@@ -6,6 +6,7 @@ from fabric.decorators import task
 from fabric.operations import run, get, settings
 from fabric.state import env
 from fabric.tasks import execute
+from fabric.network import disconnect_all
 import six
 
 
