@@ -59,6 +59,20 @@ class RoleBuilder():
             roles[role] = set()
         return roles
 
+    def get_euca_hosts(self):
+        roles = self.get_roles()
+
+        # Create set of Eucalytpus only componnents
+        euca_components = ['user-facing', 'cluster-controller',
+                           'storage-controller', 'node-controller']
+        if roles['walrus']:
+            euca_components.append('walrus')
+
+        all_hosts = roles['clc']
+        for component in euca_components:
+            all_hosts.update(roles[component])
+        return all_hosts
+
     def get_roles(self):
         roles = self._initialize_roles()
         euca_attributes = self.get_euca_attributes()
