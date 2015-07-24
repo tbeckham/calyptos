@@ -178,7 +178,7 @@ class ChefManager():
     def run_chef_client(self, chef_command="chef-client -z"):
         with cd(self.remote_folder_path + 'chef-repo'):
             with hide('running'):
-                run(chef_command + " -E " + self.environment_name + " -l info")
+                return run(chef_command + " -E " + self.environment_name + " -l info")
 
     def push_deployment_data(self):
         with hide(*self.hidden_outputs):

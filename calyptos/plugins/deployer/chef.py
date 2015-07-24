@@ -1,5 +1,6 @@
 import json
 from fabric.operations import local
+from fabric.colors import red, green
 import yaml
 from deployerplugin import DeployerPlugin
 from fabric.context_managers import hide, warn_only
@@ -80,6 +81,18 @@ class Chef(DeployerPlugin):
             execute(self.chef_manager.push_deployment_data, hosts=hosts)
         with warn_only():
             results = execute(self.chef_manager.run_chef_client, hosts=hosts)
+        failed = False
+        for machine, result in results.iteritems():
+            if result.succeeded:
+                print green('Success on host: ' + machine)
+            if result.failed:
+                failed = True
+                fail_log_name = 'calyptus-failure-' + machine + '.log'
+                print red('Chef Client failed on ' + machine + ' log available at ' +  fail_log_name)
+                with open(fail_log_name, 'w') as file:
+                    file.write(result.stdout)
+        if failed:
+            exit(1)
         execute(self.chef_manager.pull_node_info, hosts=hosts)
         return results
 
