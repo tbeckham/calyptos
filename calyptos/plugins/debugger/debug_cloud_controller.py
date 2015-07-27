@@ -5,7 +5,8 @@ from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 class DebugCloudController(DebuggerPlugin):
     def debug(self):
-        clcs = self.role_builder.roles['clc']
+        #clcs = self.role_builder.roles['clc']
+        clcs = self.component_deployer.roles['clc'] 
         with hide('everything'):
             for clc in clcs:
                 self._check_service_running(clc)
@@ -14,10 +15,6 @@ class DebugCloudController(DebuggerPlugin):
                 self._db_size_check(clc)
                 self._var_lib_euca_size_check(clc)
                 self._memory_usage(clc)
-                # If you  are debugging checks they can go here
-                # for more verbose output
-                with show('everything'):
-                    pass
         return (self.passed, self.failed)
 
     def _check_service_running(self, clc):
