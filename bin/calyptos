@@ -9,6 +9,7 @@ from fabric.tasks import execute as fabric_execute
 from stevedore import driver as plugin_driver
 from stevedore import extension
 from calyptos.rolebuilder import RoleBuilder
+import getpass
 import os
 import sys
 import shutil
@@ -271,7 +272,7 @@ if __name__ == '__main__':
             pass
     # If the sub parser requested a password and it wasnt provided, prompt the user for it...
     if hasattr(argp, 'password') and argp.password is None:
-        password = raw_input('\n\tEnter the SSH password for hosts in the deployment: ')
+        password = getpass.getpass('\n\tEnter the SSH password for hosts in the deployment: ')
         setattr(argp, 'password', str(password).strip())
 
     # Finally execute the requested operation's function
