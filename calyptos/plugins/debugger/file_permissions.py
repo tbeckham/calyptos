@@ -25,7 +25,8 @@ class FilePermissions(DebuggerPlugin):
     def _check_file_owner(self, host, path_dict):
         for owner, paths in path_dict.iteritems():
             for path in paths:
-                stat_output = self.run_command_on_host('stat -c %U ' + path, host=host)
+                with hide('everything'):
+                    stat_output = self.run_command_on_host('stat -c %U ' + path, host=host)
                 if re.search(owner, stat_output):
                     self.success(host + ': File permisssions correct for ' + path)
                 else:

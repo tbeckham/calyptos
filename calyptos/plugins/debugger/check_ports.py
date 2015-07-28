@@ -2,7 +2,6 @@ from fabric.context_managers import hide
 import re
 from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
 
-
 class CheckPorts(DebuggerPlugin):
     def debug(self):
         all_hosts = self.component_deployer.all_hosts
@@ -10,16 +9,15 @@ class CheckPorts(DebuggerPlugin):
             ports = self.run_command_on_hosts('netstat -lnp', all_hosts)
         roles = self.component_deployer.get_roles()
         clc_ports = {'tcp': [8773, 8777, 8443, 8779],
-                     'udp': [7500, 18778]}
-        ufs_ports = {'tcp': [8773, 53],
-                     'udp': [53]}
+                     'udp': [7500, 8773, 8778, 18778]}
+        ufs_ports = {'tcp': [53, 8773, 8779],
+                    'udp': [53, 7500, 8773, 8778, 18778]}
         cc_ports = {'tcp': [8774],
                     'udp': []}
-        sc_ports = {'tcp': [8773],
-                    'udp': []}
+        sc_ports = {'tcp': [8773, 8779],
+                    'udp': [7500, 8778, 8773, 18778]}
         nc_ports = {'tcp': [8775],
                     'udp': []}
-
         def check_port_map(port_map):
             for proto, ports in port_map.iteritems():
                 for port in ports:
@@ -41,7 +39,7 @@ class CheckPorts(DebuggerPlugin):
                 raise AssertionError('Required ports '
                                      'not open on host ' + host + '\n' +
                                      str(closed_ports))
-        return self.passed, self.failed
+        return (self.passed, self.failed)
 
     def _check_port(self, netstat, proto, port, host):
         port_string = proto + '.*:' + str(port)
@@ -52,3 +50,4 @@ class CheckPorts(DebuggerPlugin):
         else:
             self.failure(host + ': Closed ' + port_string)
             return False
+

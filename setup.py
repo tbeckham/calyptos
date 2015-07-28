@@ -134,7 +134,15 @@ setup(
             'file_permissions = calyptos.plugins.debugger.'
             'file_permissions:FilePermissions',
             'eucalyptus_sosreports = calyptos.plugins.debugger.'
-            'eucalyptus_sosreports:EucalyptusSosReports'
+            'eucalyptus_sosreports:EucalyptusSosReports',
+            'component_storage_check = calyptos.plugins.debugger.'
+            'component_storage_check:CheckStorage',
+            'debug_compute_req = calyptos.plugins.debugger.'
+            'debug_compute_req:CheckComputeRequirements',
+            'verify_component_networking = calyptos.plugins.debugger.'
+            'verify_component_networking:VerifyComponentNetworking',
+            'verify_networking = calyptos.plugins.debugger.'
+            'verify_networking:VerifyConnectivity'
         ]
     },
     cmdclass={
