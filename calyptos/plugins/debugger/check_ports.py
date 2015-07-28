@@ -36,9 +36,9 @@ class CheckPorts(DebuggerPlugin):
             if host in roles['node-controller']:
                 check_port_map(nc_ports)
             if closed_ports:
-                raise AssertionError('Required ports '
-                                     'not open on host ' + host + '\n' +
-                                     str(closed_ports))
+                self.warning('Required ports ' +
+                          'not open on host ' + host + '\t'
+                          + str(closed_ports))
         return (self.passed, self.failed)
 
     def _check_port(self, netstat, proto, port, host):
