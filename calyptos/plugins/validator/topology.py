@@ -9,8 +9,9 @@ class Topology(ValidatorPlugin):
 
         self.topology = self.environment['default_attributes']['eucalyptus']['topology']
         assert self.roles['clc']
-        assert self.roles['walrus']
         assert self.roles['user-facing']
+        if self.roles['walrus']:
+            assert self.roles['walrus']
         for name in self.topology['clusters'].keys():
             assert self.topology['clusters'][name]['cc-1']
             assert self.topology['clusters'][name]['sc-1']

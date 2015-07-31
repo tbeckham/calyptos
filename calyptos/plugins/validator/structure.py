@@ -45,7 +45,8 @@ class Structure(ValidatorPlugin):
                                     {
                                         'clusters': And(dict, error="Invalid environment.yml value(s) for 'clusters'."),
                                         'clc-1': And(str, error="Invalid environment.yml value(s) for 'clc-1'."),
-                                        'walrus': And(str, error="Invalid environment.yml value(s) for 'walrus'."),
+                                        Optional('walrus'):
+                                            And(str, error="Invalid environment.yml value(s) for 'walrus'."),
                                         'user-facing':
                                             And(list, error="Invalid environment.yml value(s) for 'user-facing'."),
                                         Optional('riakcs'): {
