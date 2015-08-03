@@ -5,6 +5,8 @@ from distutils.command.sdist import sdist
 import os.path
 import subprocess
 import glob
+import multiprocessing
+import sys
 
 from setuptools import setup, find_packages
 
@@ -87,8 +89,11 @@ setup(
     packages=find_packages(),
     test_suite='nose.collector',
     tests_require=['nose'],
-    install_requires=['fabric', 'PyYaml', 'argparse', 'stevedore', 'sphinx',
-                      'pbr >= 0.10.7', 'six >= 1.9.0'],
+    # setup requires enables modules that are used during build/install of calyptos
+    setup_requires=['pbr==0.11.0'] + (['argparse<=1.2.2'] if sys.version_info[:2] == (2, 6) else []),
+    # argparse is only required if python==2.6
+    install_requires=['pbr==0.11.0', 'fabric', 'PyYaml', 'stevedore<1.4.0', 'sphinx']
+                     + (['argparse<=1.2.2'] if sys.version_info[:2] == (2, 6) else []),
     scripts=['bin/calyptos'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
