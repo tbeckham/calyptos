@@ -67,7 +67,6 @@ def locate_cfgfile():
             # to return a valid config file name
             return item
 
-
 def run_driver(argp, operation, namespace=None, driver=None):
     namespace = namespace or argp.namespace or default_namespace
     driver = driver or argp.driver or default_driver
@@ -79,7 +78,8 @@ def run_driver(argp, operation, namespace=None, driver=None):
                          argp.environment,
                          argp.config,
                          argp.debug,
-                         argp.branch),
+                         argp.branch,
+                         argp.cookbook_repo),
         )
     function = getattr(mgr.driver, operation)
     function()
@@ -182,7 +182,8 @@ def add_subparser(subparsers, func, title=None, helpstr=None,
     if branch:
         myparser.add_argument('-b', '--branch', default=branch, help='branch')
     if cookbook_repo:
-        myparser.add_argument('--cookbook-repo', default=cookbook_repo, help='cookbook-repo')
+        myparser.add_argument('--cookbook-repo', default=cookbook_repo,
+                              help='Alternate eucalyptus-cookbook repo to use')
     if driver:
         myparser.add_argument('-d', '--driver', default=driver, help='driver')
     if environment:
