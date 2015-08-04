@@ -16,8 +16,8 @@ class Storage(ValidatorPlugin):
                                    name + '.storage.cephvolumepools']
                 threepar_properties = [name + '.storage.chapuser', name + '.storage.ncpaths', name + '.storage.sanhost',
                                        name + '.storage.sanuser', name + '.storage.sanpassword', name +
-                                       '.storage.scpaths', name + '.storage.threeparwsport', name + '.storage.usercpg',
-                                       name + '.storage.copycpg']
+                                       '.storage.scpaths', name + '.storage.threeparwsport', name + '.storage.threeparusercpg',
+                                       name + '.storage.threeparcopycpg']
                 for val1 in storage_options:
                     if val1 in self.topology['clusters'][name]['storage-backend']:
                         if val1 == "netapp":
