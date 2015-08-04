@@ -13,7 +13,7 @@ from calyptos.rolebuilder import RoleBuilder
 class Chef(DeployerPlugin):
     def __init__(self, password, environment_file='etc/environment.yml',
                  config_file='config.yml', debug=False, branch='euca-4.1',
-                 repo='https://github.com/eucalyptus/eucalyptus-cookbook'):
+                 cookbook_repo='https://github.com/eucalyptus/eucalyptus-cookbook'):
         self.chef_repo_dir = 'chef-repo'
         self.environment_file = environment_file
         if debug:
@@ -23,20 +23,20 @@ class Chef(DeployerPlugin):
         self.role_builder = RoleBuilder(environment_file)
         self.roles = self.role_builder.get_roles()
         self.all_hosts = self.roles['all']
-        self._prepare_fs(repo, branch, debug)
+        self._prepare_fs(cookbook_repo, branch, debug)
         self.environment_name = self._write_json_environment()
         self.chef_manager = ChefManager(password, self.environment_name,
                                         self.roles['all'])
         self.config = self.get_chef_config(config_file)
 
-    def _prepare_fs(self, repo, branch, debug):
+    def _prepare_fs(self, cookbook_repo, branch, debug):
         ChefManager.install_chef_dk()
         ChefManager.create_chef_repo()
         with hide(*self.hidden_outputs):
             local('if [ ! -d eucalyptus-cookbook ]; then '
                   'git clone '
                   '{0} eucalyptus-cookbook;'
-                  'fi'.format(repo))
+                  'fi'.format(cookbook_repo))
             local('cd eucalyptus-cookbook; git checkout {0};'.format(branch))
             local('cd eucalyptus-cookbook; git pull origin {0};'.format(branch))
         ChefManager.download_cookbooks('eucalyptus-cookbook/Berksfile',
