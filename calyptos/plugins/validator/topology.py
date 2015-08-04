@@ -12,20 +12,19 @@ class Topology(ValidatorPlugin):
         assert self.roles['clc']
         assert self.roles['user-facing']
         if 'walrus' in self.topology and 'riakcs' in self.topology:
-            self.failure('Can not have both riakcs and walrus keys configured')
-            exit(1)
+            raise AssertionError("Can only have riakcs or walrus in topology, not both")
         if 'walrus' in self.topology:
             assert self.roles['walrus']
-            self.success('Walrus host is present')
+            self.success('Found valid walrus key')
         elif 'riakcs' in self.topology:
             for val in riakcs_keys_master:
                 try:
                     assert val in self.topology['riakcs']
-                    self.success('riakcs property "' + val + '" is present.')
+                    self.success('Found riakcs key: ' + val)
                 except AssertionError, e:
-                    self.failure('riakcs property "' + val + '" is missing or invalid!  ' + str(e))
+                    self.failure('riakcs key "' + val + '" is missing or invalid!  ' + str(e))
         else:
-            self.failure('Must have riakcs or walrus key defined!')
+            raise AssertionError("Must have riakcs or walrus key defined!")
         for name in self.topology['clusters'].keys():
             assert self.topology['clusters'][name]['cc-1']
             assert self.topology['clusters'][name]['sc-1']
