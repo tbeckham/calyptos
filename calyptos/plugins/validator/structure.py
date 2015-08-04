@@ -53,9 +53,9 @@ class Structure(ValidatorPlugin):
                                             'access-key':
                                                 And(str, error="Invalid environment.yml value(s) for 'access-key'."),
                                             'admin-email':
-                                                And(str, error="Invalid environment.yml value(s) for 'access-email'."),
+                                                And(str, error="Invalid environment.yml value(s) for 'admin-email'."),
                                             'admin-name':
-                                                And(str, error="Invalid environment.yml value(s) for 'access-name'."),
+                                                And(str, error="Invalid environment.yml value(s) for 'admin-name'."),
                                             'endpoint':
                                                 And(str, error="Invalid environment.yml value(s) for 'endpoint'."),
                                             'port':
