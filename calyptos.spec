@@ -22,6 +22,8 @@ Url: https://github.com/eucalyptus/calyptos/
 
 BuildRequires: python2-devel
 BuildRequires: python-setuptools
+BuildRequires: python-argparse
+BuildRequires: python-pbr
 
 Requires: fabric PyYAML git python-stevedore python-click python-argparse
 
