@@ -78,6 +78,12 @@ with open('README.md') as f:
 
 example_items = glob.glob('examples/*')
 
+# argparse is only required if python==2.6
+if sys.version_info[:2] == (2, 6):
+    argparse_list = ['argparse<=1.2.2']
+else:
+    argparse_list = []
+
 setup(
     name='calyptos',
     version=__version__,
@@ -90,9 +96,8 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose'],
     # setup requires enables modules that are used during build/install of calyptos
-    setup_requires=(['argparse<=1.2.2'] if sys.version_info[:2] == (2, 6) else []) + ['pbr'],
-    # argparse is only required if python==2.6
-    install_requires=(['argparse<=1.2.2'] if sys.version_info[:2] == (2, 6) else []) + ['pbr==0.11.0', 'fabric', 'PyYaml', 'stevedore<1.4.0', 'sphinx'],
+    setup_requires= argparse_list + ['pbr'],
+    install_requires= argparse_list + ['pbr==0.11.0', 'fabric', 'PyYaml', 'stevedore<1.4.0', 'sphinx'],
     scripts=['bin/calyptos'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
