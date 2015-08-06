@@ -87,7 +87,7 @@ class Chef(DeployerPlugin):
                 print green('Success on host: ' + machine)
             if result.failed:
                 failed = True
-                fail_log_name = 'calyptus-failure-' + machine + '.log'
+                fail_log_name = 'calyptos-failure-' + machine + '.log'
                 print red('Chef Client failed on ' + machine + ' log available at ' +  fail_log_name)
                 with open(fail_log_name, 'w') as file:
                     file.write(result.stdout)
