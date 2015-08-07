@@ -10,7 +10,7 @@ class CheckPorts(DebuggerPlugin):
             ports = self.run_command_on_hosts('netstat -lnp', all_hosts)
         roles = self.component_deployer.get_roles()
         clc_ports = {'tcp': [8773, 8777, 8443, 8779],
-                     'udp': [7500, 18778]}
+                     'udp': [7500, 8778]}
         ufs_ports = {'tcp': [8773, 53],
                      'udp': [53]}
         cc_ports = {'tcp': [8774],
