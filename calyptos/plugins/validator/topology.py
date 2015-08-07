@@ -23,8 +23,6 @@ class Topology(ValidatorPlugin):
                     self.success('Found riakcs key: ' + val)
                 except AssertionError, e:
                     self.failure('riakcs key "' + val + '" is missing or invalid!  ' + str(e))
-        else:
-            raise AssertionError("Must have riakcs or walrus key defined!")
         for name in self.topology['clusters'].keys():
             assert self.topology['clusters'][name]['cc-1']
             assert self.topology['clusters'][name]['sc-1']
