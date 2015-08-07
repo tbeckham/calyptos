@@ -5,7 +5,6 @@ from distutils.command.sdist import sdist
 import os.path
 import subprocess
 import glob
-import multiprocessing
 import sys
 
 from setuptools import setup, find_packages
@@ -78,11 +77,15 @@ with open('README.md') as f:
 
 example_items = glob.glob('examples/*')
 
-# argparse is only required if python==2.6
-if sys.version_info[:2] == (2, 6):
-    argparse_list = ['argparse<=1.2.2']
-else:
-    argparse_list = []
+
+
+requirements = ['fabric', 'PyYaml', 'stevedore', 'sphinx',
+                'pbr >= 0.10.7', 'six >= 1.9.0']
+setup_requirements = ['pbr']
+# argparse is only required if python<2.7
+if sys.version_info < (2, 7):
+    requirements.insert(0, 'argparse<=1.2.2') # prepend using insert instead of appending
+    setup_requirements.insert(0, 'argparse<=1.2.2') # prepend using insert instead of appending
 
 setup(
     name='calyptos',
@@ -96,8 +99,8 @@ setup(
     test_suite='nose.collector',
     tests_require=['nose'],
     # setup requires enables modules that are used during build/install of calyptos
-    setup_requires= argparse_list + ['pbr'],
-    install_requires= argparse_list + ['pbr==0.11.0', 'fabric', 'PyYaml', 'stevedore<1.4.0', 'sphinx'],
+    setup_requires=setup_requirements,
+    install_requires=requirements,
     scripts=['bin/calyptos'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
