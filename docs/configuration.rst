@@ -179,4 +179,66 @@ Example::
     zookeepers:
     - 10.111.5.162:2181
 
+RiakCS
+^^^^^^
+riak_cs
+"""""""
+Example::
+
+  riak_cs: (Config for RiakCS)
+    config:
+      riak_cs:
+        anonymous_user_creation: true (boolean; default: true; required)
+        fold_objects_for_list_keys: true (boolean; default: true; required)
+        admin_key": "admin-key" (string; default: "admin-key"; required)
+        admin_secret": "admin-secret" (string; default: "admin-secret"; required)
+        cs_port: 8080 (int; default: 8080; required; can be any usable port)
+
+riak
+""""
+Example::
+
+  riak:
+    config:
+      riak_kv:
+        storage_backend: "riak_cs_kv_multi_backend" (string; default: "riak_cs_kv_multi_backend"; required; default value is required for RiakCS deployment)
+
+sysctl
+""""""
+Example::
+
+  sysctl:
+    params: (following params are required to avoid riak-diag warnings)
+      net.core.wmem_default: "8388608"
+      net.core.rmem_default: "8388608"
+      net.core.wmem_max: "8388608"
+      net.core.rmem_max: "8388608"
+      net.core.netdev_max_backlog: "10000"
+
+haproxy
+"""""""
+Example::
+
+  haproxy: (required if riak_cs cluster is being placed behind load-balancer)
+    incoming_port: 80 (int; default: 80; required; can be any usable port)
+    members:
+      - "server <host-01> <ip_address_of_riakcs_host-01>:<cs_port value from riak_cs config> weight 1 maxconn 256000 check"
+      - "server <host-02> <ip_address_of_riakcs_host-02>:<cs_port value from riak_cs config> weight 1 maxconn 256000 check"
+      - "server <host-03> <ip_address_of_riakcs_host-03>:<cs_port value from riak_cs config> weight 1 maxconn 256000 check"
+
+riakcs_cluster
+""""""""""""""
+Example::
+
+  riakcs_cluster: (Config for RiakCS Cluster)
+    topology:
+      head: (A host where calyptos bootstraps and creates necessary artifacts for the entire cluster)
+        ipaddr: "ip_address of the head node" (string; required)
+        fqdn: "host_name of the head node" (string; required)
+      stanchion_ip: "ip_address for the stanchion host" (string; required)
+      stanchion_port: 8085 (int; default: 8085; required; port for the stanchion host")
+      load_balancer: "ip_address" (string; required; where load balancer should be installed for riak_cs cluster)
+      nodes:
+      - "ip_address" (string; required; ip_address for riakcs nodes)
+      - "ip_address" (string; required; ip_address for riakcs nodes)
 
