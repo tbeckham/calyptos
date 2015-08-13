@@ -181,6 +181,8 @@ Example::
 
 RiakCS
 ^^^^^^
+To deploy and use a RiakCS cluster, the configuration files need to have few sections e.g riak, riak_cs, sysctl, haproxy, riakcs_cluster.
+
 riak_cs
 """""""
 Example::
@@ -241,4 +243,3 @@ Example::
       nodes:
       - "ip_address" (string; required; ip_address for riakcs nodes)
       - "ip_address" (string; required; ip_address for riakcs nodes)
-
