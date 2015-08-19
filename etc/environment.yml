@@ -1,7 +1,7 @@
 
 ---
 name: scale-system
-description: 4.1 EDGE Testing
+description: Eucalyptus Scale Testing
 default_attributes:
   eucalyptus:
     topology:
