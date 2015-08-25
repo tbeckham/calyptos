@@ -8,7 +8,7 @@ This is a tool for managing your Eucalyptus deployments
 
 ### On a CentOS 6 system:
 
-    yum install -y python-devel gcc git python-setuptools fabric PyYAML python-stevedore
+    yum install -y python-devel gcc git python-setuptools
     git clone https://github.com/eucalyptus/calyptos
     cd calyptos
     python setup.py install
