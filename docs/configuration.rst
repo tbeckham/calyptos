@@ -243,3 +243,27 @@ Example::
       nodes:
       - "ip_address" (string; required; ip_address for riakcs nodes)
       - "ip_address" (string; required; ip_address for riakcs nodes)
+
+Ceph
+^^^^
+To deploy and use a RiakCS cluster, the configuration files need to have few sections e.g riak, riak_cs, sysctl, haproxy, riakcs_cluster.
+
+ceph
+""""
+Example::
+
+  ceph: (Config for Ceph Cluster)
+    config:
+      fsid: "unique id, e.g uuid" (string; required)
+    topology:
+      mon_bootstrap:
+        ipaddr: "ip address of a mon host where calyptos bootstraps"
+        hostname: "hostname of bootstrap mon host"
+      osds:
+        - ipaddr: "ip address of an osd host"
+          hostname: "hostname of an osd host"
+        - ipaddr: "ip address of an osd host"
+          hostname: "hostname of an osd host"
+          drive: (if using drives for OSDs, if not present, filesystem will be used for single OSD)
+            - "drive name if not using OS drive e.g /dev/osd1 [optional]"
+            - "drive name if not using OS drive e.g /dev/osd2 [optional]"
