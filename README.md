@@ -38,7 +38,12 @@ This step deploys the CLC and initializes the database. Here we are getting a bi
 Provisions the rest of the system or update the configuration of an existing system. If you change anything in your environment.yml, you can use this to push that change out to your cloud.
 
     calyptos provision -p <root-ssh-password-for-deployment-systems>
-    
+
+### Execute
+Executes a command across a set of hosts. By default all hosts run the command but using the -r parameter you can run on only a particular set of hosts, categorized by role.
+
+    calyptos execute -p <root-ssh-password-for-deployment-systems> -e <your-environment-file> '<your-command-here>'
+
 ### Debug
 This step will grab all necessary information from a system in order to provide artifacts for use in debugging a problem.  In addition, this step will do the following:
 * Confirm/install [sosreports](https://github.com/sosreport/sos) and [eucalyptus sosreports plugin](https://github.com/eucalyptus/eucalyptus-sosreport-plugins) on each node
