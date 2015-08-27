@@ -137,6 +137,7 @@ def execute(argp, command=None, role=None):
     env.hosts = component_deployer.roles[role]
     env.password = argp.password
     env.user = 'root'
+    env.parallel = True
     try:
         fabric_execute(fabric_run, command, hosts=component_deployer.roles[role])
     finally:
