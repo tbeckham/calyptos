@@ -12,7 +12,7 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class DebuggerPlugin(object):
-    #Base class for example plugin used in the tutorial.
+    #Base class for Debugger Plugin.
 
     def __init__(self, component_deployer):
         self.passed = 0

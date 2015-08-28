@@ -5,7 +5,6 @@ from calyptos.plugins.debugger.debuggerplugin import DebuggerPlugin
 
 class DebugCloudController(DebuggerPlugin):
     def debug(self):
-        #clcs = self.role_builder.roles['clc']
         clcs = self.component_deployer.roles['clc'] 
         with hide('everything'):
             for clc in clcs:
