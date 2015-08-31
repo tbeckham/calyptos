@@ -2,6 +2,7 @@ from calyptos.plugins.validator.validatorplugin import ValidatorPlugin
 from fabric.colors import yellow, red
 import threading
 import subprocess
+import platform
 
 
 
@@ -40,7 +41,11 @@ class PingHosts(ValidatorPlugin):
             exit(total_pings_failed)
 
     def ping_ip(self, host, count=3):
-        args = 'ping -W 3 -c {0} {1}'.format(count, host)
+        check_platform = platform.system()
+        if check_platform == "Linux":
+            args = 'ping -W 3 -c {0} {1}'.format(count, host)
+        else:
+            args = 'ping -W 3000 -c {0} {1}'.format(count, host)
         process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                    bufsize=4096, shell=True)
         output, unused_err = process.communicate()
