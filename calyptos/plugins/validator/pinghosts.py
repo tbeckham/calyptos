@@ -1,5 +1,5 @@
 from calyptos.plugins.validator.validatorplugin import ValidatorPlugin
-from fabric.colors import yellow
+from fabric.colors import yellow, red
 import threading
 import subprocess
 
@@ -35,7 +35,9 @@ class PingHosts(ValidatorPlugin):
         print yellow('Total successful pings: ' + str(total_pings_passed))
         print yellow('Total failed pings: ' + str(total_pings_failed))
         print yellow('--------------------------------------------------')
-        print ""
+        if total_pings_failed > 0:
+            print red('Unable to reach all hosts, validation failed.')
+            exit(total_pings_failed)
 
     def ping_ip(self, host, count=3):
         args = 'ping -W 3 -c {0} {1}'.format(count, host)
