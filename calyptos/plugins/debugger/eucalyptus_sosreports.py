@@ -17,6 +17,8 @@ class EucalyptusSosReports(DebuggerPlugin):
 
         # Create set of Eucalytpus only componnents
         all_hosts = self.component_deployer.get_euca_hosts()
+
+        env.parallel = True
         """
         Check to make sure sos and eucalyptus-sos-plugins
         packages are installed
@@ -134,7 +136,6 @@ class EucalyptusSosReports(DebuggerPlugin):
         """
         env.user = user
         env.password = password
-        env.parallel = True
         hostname = env.host.replace(".", "_")
         message = 'Running sosreport on ' + env.host
         message_style = "[{0: <20}] {1}"
