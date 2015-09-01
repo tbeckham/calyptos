@@ -90,14 +90,14 @@ Example::
 
 This section describes not only where to connect to your hosts but also which components should be installed on each.
 The cloud global components are defined by the following keys in the topology section:
-* ``clc-1``: The primary cloud controller host
-* ``user-facing``: A list of user-facing service hosts
-* ``walrus``: The host to install the walrus on
+  * ``clc-1``: The primary cloud controller host
+  * ``user-facing``: A list of user-facing service hosts
+  * ``walrus``: The host to install the walrus on
 The cluster level components are defined in a dictionary where the key is the intended name of the cluster. In our example
 above the cluster name is ``hadoop-a``. Inside each of the specific cluster sections the following hosts must be defined:
-* ``cc-1``: The primary cluster controller
-* ``sc-1``: The primary storage controller
-* ``nodes``: This is a space separated string of the node controllers in this cluster
+  * ``cc-1``: The primary cluster controller
+  * ``sc-1``: The primary storage controller
+  * ``nodes``: This is a space separated string of the node controllers in this cluster
 
 network
 """""""

@@ -1,5 +1,12 @@
 Quick Start
 -----------
+Pre-requisites
+++++++++++++++
+Before starting the installation process you should have:
+    # Hosts provisioned with CentOS or RHEL 6
+    # SSH access to the machines you will deploy on (password or key based)
+    # At least 16 network addresses carved out from your network
+    
 Installation
 ++++++++++++
 In order to install Calyptos you should run the following commands on a CentOS 6 host:
