@@ -41,8 +41,8 @@ class ChefManager():
         self.node_hash = {}
         self.hidden_outputs = ['running', 'stdout', 'stderr']
         with hide(*self.hidden_outputs):
-            self.local_hostname = local('hostname -f', capture=True)
-            self.remote_hostnames = execute(run, 'hostname -f', hosts=hosts)
+            self.local_hostname = local('hostname', capture=True)
+            self.remote_hostnames = execute(run, 'hostname', hosts=hosts)
 
     @staticmethod
     def sync_ssh_key(hosts, debug=False):
@@ -188,8 +188,8 @@ class ChefManager():
                     ssh_opts=self.ssh_opts, delete=True)
 
     def pull_node_info(self):
-        local_path = 'chef-repo/nodes/' + run('hostname -f') + '.json'
+        local_path = 'chef-repo/nodes/' + run('hostname') + '.json'
         remote_path = self.remote_folder_path + local_path
-        if self.local_hostname != run('hostname -f'):
+        if self.local_hostname != run('hostname'):
             get(remote_path=remote_path, local_path=local_path)
             self.read_node_hash(local_path)
