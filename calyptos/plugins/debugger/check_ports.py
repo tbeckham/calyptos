@@ -9,13 +9,13 @@ class CheckPorts(DebuggerPlugin):
             ports = self.run_command_on_hosts('netstat -lnp', all_hosts)
         roles = self.component_deployer.get_roles()
         clc_ports = {'tcp': [8773, 8777, 8443, 8779],
-                     'udp': [7500, 8773, 8778, 18778]}
+                     'udp': [7500, 8773]}
         ufs_ports = {'tcp': [53, 8773, 8779],
-                    'udp': [53, 7500, 8773, 8778, 18778]}
+                    'udp': [53, 7500, 8773]}
         cc_ports = {'tcp': [8774],
                     'udp': []}
         sc_ports = {'tcp': [8773, 8779],
-                    'udp': [7500, 8778, 8773, 18778]}
+                    'udp': [7500, 8773]}
         nc_ports = {'tcp': [8775],
                     'udp': []}
         def check_port_map(port_map):
@@ -26,14 +26,19 @@ class CheckPorts(DebuggerPlugin):
         for host, netstat in ports.iteritems():
             closed_ports = []
             if host in roles['clc']:
+                self.info('Confirm reserved ports are open on Cloud Controller')
                 check_port_map(clc_ports)
             if host in roles['user-facing']:
+                self.info('Confirm reserved ports are open on User Facing Services')
                 check_port_map(ufs_ports)
             if host in roles['cluster-controller']:
+                self.info('Confirm reserved ports are open on Cluster Controller')
                 check_port_map(cc_ports)
             if host in roles['storage-controller']:
+                self.info('Confirm reserved ports are open on Storage Controller')
                 check_port_map(sc_ports)
             if host in roles['node-controller']:
+                self.info('Confirm reserved ports are open on Node Controller')
                 check_port_map(nc_ports)
             if closed_ports:
                 self.warning('Required ports ' +

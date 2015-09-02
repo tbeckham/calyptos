@@ -3,7 +3,7 @@ from fabric.operations import local
 from fabric.colors import red, green
 import yaml
 from deployerplugin import DeployerPlugin
-from fabric.context_managers import hide, warn_only
+from fabric.context_managers import hide, warn_only, lcd
 from fabric.tasks import execute
 from calyptos.chefmanager import ChefManager
 import os
@@ -167,4 +167,5 @@ class Chef(DeployerPlugin):
         if self.roles['haproxy']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['haproxy::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
-        local('rm -rf ./chef-repo/nodes/*')
+        with lcd('chef-repo'):
+            local('knife node bulk delete -z -E {0} -y ".*"'.format(self.environment_name))
