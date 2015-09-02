@@ -16,8 +16,8 @@ In order to install Calyptos you should run the following commands on a CentOS 6
     # yum install -y python-devel gcc git python-setuptools
     # easy_install fabric PyYAML
     # curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -P chefdk
-    # git clone https://github.com/viglesiasce/euca-deploy
-    # cd euca-deploy
+    # git clone https://github.com/eucalyptus/calyptos.git
+    # cd calyptos
     # python setup.py install
 
 Creating your configuration
