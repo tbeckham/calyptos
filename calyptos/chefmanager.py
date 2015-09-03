@@ -158,6 +158,7 @@ class ChefManager():
             self.write_node_hash(node_name)
 
     def get_node_json(self, ip):
+        self.load_local_node_info()
         node_name = self.get_node_name_by_ip(ip)
         return self.node_hash[node_name]
 
