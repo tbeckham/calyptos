@@ -132,7 +132,9 @@ setup(
             'storage = calyptos.plugins.validator.'
             'storage:Storage',
             'structure = calyptos.plugins.validator.'
-            'structure:Structure'
+            'structure:Structure',
+            'vpc = calyptos.plugins.validator.'
+            'vpc:VPC'
         ],
         'calyptos.debugger': [
             'check_ports = calyptos.plugins.debugger.'
