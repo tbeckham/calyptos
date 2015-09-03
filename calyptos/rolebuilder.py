@@ -183,6 +183,8 @@ class RoleBuilder():
                     midolman_host_mapping = midokura_attributes.get('midolman-host-mapping', None)
                     if midolman_host_mapping:
                         mido_api_ip = midolman_host_mapping.get(mido_gw_hostname, None)
+                        if not mido_api_ip:
+                            raise Exception('Unable to find midonet-api ({0}) host in midolman-host-mapping'.format(mido_gw_hostname))
                         # Add the host IP for the midonet gw
                         roles['midonet-api'].add(mido_api_ip)
                         # Add hosts from the midonet host mapping, and all nodes
