@@ -106,6 +106,7 @@ class Chef(DeployerPlugin):
         for method in order:
             with hide(*self.hidden_outputs):
                 execute(method, hosts=self.all_hosts)
+        print green('Prepare has completed successfully. Continue on to the provision phase')
 
     def bootstrap(self):
         # Install CLC and Initialize DB
@@ -131,8 +132,25 @@ class Chef(DeployerPlugin):
             clc = self.roles['clc']
             self.chef_manager.add_to_run_list(clc, self._get_recipe_list('clc'))
             self._run_chef_on_hosts(clc)
+        print green('Bootstrap has completed successfully. Continue on to the provision phase')
+
+    def _pre_provision_check(self):
+        clc_attributes = self.chef_manager.get_node_json(self.clc.pop())
+        clc_euca_attributes = clc_attributes['normal']['eucalyptus']
+        if 'cloud-keys' in clc_euca_attributes:
+            keys = ['cloud-cert.pem', 'cloud-pk.pem', 'euca.p12']
+            for key in keys:
+                if key not in clc_euca_attributes[key]:
+                    print red('Unable to find cloud keys {0} in CLC attributes'.format(clc_euca_attributes[key]))
+                    print red('Re-run the bootstrap step and ensure that it is successful')
+                    exit(1)
+        else:
+            print red('Unable to find cloud keys in CLC attributes')
+            print red('Re-run the bootstrap step and ensure that it is successful')
+            exit(1)
 
     def provision(self):
+        self._pre_provision_check()
         # Install all other components and configure CLC
         self.chef_manager.clear_run_list(self.all_hosts)
         for role_dict in self.config['roles']:
@@ -155,6 +173,7 @@ class Chef(DeployerPlugin):
                 create_resources = 'midokura::create-first-resources'
                 self.chef_manager.add_to_run_list(midonet_api, [create_resources])
                 self._run_chef_on_hosts(midonet_api)
+        print green('Provision has completed successfully. Your cloud is now configured and ready to use.')
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
@@ -169,3 +188,4 @@ class Chef(DeployerPlugin):
         self._run_chef_on_hosts(self.all_hosts)
         with lcd('chef-repo'):
             local('knife node bulk delete -z -E {0} -y ".*"'.format(self.environment_name))
+        print green('Uninstall has completed successfully. Your cloud is now torn down.')

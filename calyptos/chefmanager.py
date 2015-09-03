@@ -134,7 +134,7 @@ class ChefManager():
         network = auto.get('network')
         if network:
             interfaces = network.get('interfaces')
-            for interface, i_info  in  interfaces.iteritems():
+            for interface, i_info in interfaces.iteritems():
                 for address in i_info.get('addresses', {}):
                     addrs.append(address)
         return addrs
@@ -156,6 +156,10 @@ class ChefManager():
                 if recipe not in self.node_hash[node_name]['run_list']:
                     self.node_hash[node_name]['run_list'].append(recipe)
             self.write_node_hash(node_name)
+
+    def get_node_json(self, ip):
+        node_name = self.get_node_name_by_ip(ip)
+        return self.node_hash[node_name]
 
     def clear_run_list(self, hosts):
         self.load_local_node_info()
