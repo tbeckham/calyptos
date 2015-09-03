@@ -79,7 +79,8 @@ def run_driver(argp, operation, namespace=None, driver=None):
                          argp.config,
                          argp.debug,
                          argp.branch,
-                         argp.cookbook_repo),
+                         argp.cookbook_repo,
+                         argp.update_repo),
         )
     function = getattr(mgr.driver, operation)
     function()
@@ -169,9 +170,9 @@ def debug(argp):
 def add_subparser(subparsers, func, title=None, helpstr=None,
                   formatter_class=ArgumentDefaultsHelpFormatter, branch=default_branch,
                   cookbook_repo=default_cookbook_repo, driver=default_driver,
-                  environment=True, password=True):
+                  environment=True, password=True, update_repo=True):
     """
-    Add a subparser to the main/parent argparser. This will handle arguements for the
+    Add a subparser to the main/parent argparser. This will handle arguments for the
     matching driver operations
     """
     helpstr = helpstr or func.func_doc
@@ -194,6 +195,9 @@ def add_subparser(subparsers, func, title=None, helpstr=None,
     if password:
         myparser.add_argument('-p', '--password', default=None,
                               help='SSH password for machines that Calyptos will interact with')
+    if update_repo:
+        myparser.add_argument('--no-update-repo', default=True, action='store_false', dest='update_repo',
+                              help='Do not pull changes from eucalyptus-cookbook origin.')
     return myparser
 
 
