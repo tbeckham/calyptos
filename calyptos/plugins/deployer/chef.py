@@ -106,7 +106,7 @@ class Chef(DeployerPlugin):
         for method in order:
             with hide(*self.hidden_outputs):
                 execute(method, hosts=self.all_hosts)
-        print green('Prepare has completed successfully. Continue on to the provision phase')
+        print green('Prepare has completed successfully. Continue on to the bootstrap phase')
 
     def bootstrap(self):
         # Install CLC and Initialize DB
