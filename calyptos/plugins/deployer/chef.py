@@ -135,7 +135,7 @@ class Chef(DeployerPlugin):
         print green('Bootstrap has completed successfully. Continue on to the provision phase')
 
     def _pre_provision_check(self):
-        clc_attributes = self.chef_manager.get_node_json(self.roles['clc'][0])
+        clc_attributes = self.chef_manager.get_node_json(list(self.roles['clc'])[0])
         clc_euca_attributes = clc_attributes['normal']['eucalyptus']
         if 'cloud-keys' in clc_euca_attributes:
             keys = ['cloud-cert.pem', 'cloud-pk.pem', 'euca.p12']
