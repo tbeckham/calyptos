@@ -124,6 +124,16 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(riak_head, self._get_recipe_list('riak-head'))
             self._run_chef_on_hosts(riak_head)
 
+        if self.roles['mido-zookeeper']:
+            midolman_hosts = self.roles['mido-zookeeper']
+            self.chef_manager.add_to_run_list(midolman_hosts, ['midokura::zookeeper'])
+            self._run_chef_on_hosts(midolman_hosts)
+
+        if self.roles['mido-cassandra']:
+            midolman_hosts = self.roles['mido-cassandra']
+            self.chef_manager.add_to_run_list(midolman_hosts, ['midokura::cassandra'])
+            self._run_chef_on_hosts(midolman_hosts)
+
         if self.roles['midolman']:
             midolman_hosts = self.roles['midolman']
             self.chef_manager.add_to_run_list(midolman_hosts, ['midokura::midolman'])

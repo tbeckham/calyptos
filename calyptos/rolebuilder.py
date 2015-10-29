@@ -7,11 +7,13 @@ class RoleBuilder():
     ROLE_LIST = ['clc',
                  'user-facing',
                  'walrus',
-                 'midonet-api',
                  'cluster-controller',
                  'storage-controller',
                  'node-controller',
+                 'midonet-api',
                  'midolman',
+                 'mido-zookeeper',
+                 'mido-cassandra'
                  'mon-bootstrap',
                  'ceph-mons',
                  'ceph-osds',
@@ -184,7 +186,8 @@ class RoleBuilder():
                     if midolman_host_mapping:
                         mido_api_ip = midolman_host_mapping.get(mido_gw_hostname, None)
                         if not mido_api_ip:
-                            raise Exception('Unable to find midonet-api ({0}) host in midolman-host-mapping'.format(mido_gw_hostname))
+                            raise Exception('Unable to find midonet-api ({0}) host '
+                                            'in midolman-host-mapping'.format(mido_gw_hostname))
                         # Add the host IP for the midonet gw
                         roles['midonet-api'].add(mido_api_ip)
                         # Add hosts from the midonet host mapping, and all nodes
@@ -192,6 +195,10 @@ class RoleBuilder():
                             roles['midolman'].add(host_ip)
                         for node in roles['node-controller']:
                             roles['midolman'].add(node)
+                    for host in self.env_dict.get('midokura', {}).get('zookeepers', []):
+                        roles['mido-zookeeper'].append(host)
+                    for host in self.env_dict.get('midokura', {}).get('cassandras', []):
+                        roles['mido-cassandra'].append(host)
                 except KeyError:
                     roles['midolman'] = roles['node-controller']
                     roles['midonet-api'] = roles['clc']
