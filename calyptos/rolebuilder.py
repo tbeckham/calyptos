@@ -13,7 +13,7 @@ class RoleBuilder():
                  'midonet-api',
                  'midolman',
                  'mido-zookeeper',
-                 'mido-cassandra'
+                 'mido-cassandra',
                  'mon-bootstrap',
                  'ceph-mons',
                  'ceph-osds',
