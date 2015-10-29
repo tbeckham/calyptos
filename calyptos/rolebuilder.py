@@ -196,9 +196,9 @@ class RoleBuilder():
                         for node in roles['node-controller']:
                             roles['midolman'].add(node)
                     for host in self.env_dict.get('midokura', {}).get('zookeepers', []):
-                        roles['mido-zookeeper'].append(host)
+                        roles['mido-zookeeper'].add(host)
                     for host in self.env_dict.get('midokura', {}).get('cassandras', []):
-                        roles['mido-cassandra'].append(host)
+                        roles['mido-cassandra'].add(host)
                 except KeyError:
                     roles['midolman'] = roles['node-controller']
                     roles['midonet-api'] = roles['clc']
