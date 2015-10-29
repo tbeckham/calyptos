@@ -5,7 +5,7 @@ from urllib2 import Request, urlopen, URLError
 class Repos(ValidatorPlugin):
     def validate(self):
         eucalyptus_attributes = self.environment['default_attributes']['eucalyptus']
-        self.repotypes = ['enterprise-repo', 'default-img-url', 'euca2ools-repo', 'eucalyptus-repo', 'init-script-url', 'post-script-url']
+        self.repotypes = ['default-img-url', 'euca2ools-repo', 'eucalyptus-repo', 'init-script-url', 'post-script-url']
         self.repos = []
         for val in self.repotypes:
             if val in eucalyptus_attributes:
