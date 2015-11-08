@@ -1,26 +1,29 @@
 from calyptos.plugins.validator.validatorplugin import ValidatorPlugin
-
+import re
 
 class VPC(ValidatorPlugin):
 
     def __init__(self, *args, **kwargs):
         super(VPC, self).__init__(*args, **kwargs)
+        # Eucalyptus Network Config VPC Attribute Paths
         self.net_mode_path = ['default_attributes', 'eucalyptus', 'network', 'mode']
         self.mido_config_path = ['default_attributes', 'eucalyptus', 'network', 'config-json',
                                  'Mido']
+        # Midokura Configuration Attribute Paths
+        self.midokura_path = ['default_attributes', 'midokura']
+        self.zookeepers_path = self.midokura_path + ['zookeepers']
+        self.cassandras_path = self.midokura_path + ['cassandras']
+        self.initial_tenant_path = self.midokura_path + ['initial-tenant']
+        self.bgp_peers_path = self.midokura_path + ['bgp-peers']
+        self.midonet_api_path = self.midokura_path + ['midonet-api-url']
+
+        # Store Euca/Midonet Gateways Hostnames for verification purposes
         self.mido_gw_hostnames = []
 
-    def _get_env_attr(self, path):
-        context = self.environment
-        for key in path:
-            if isinstance(context, dict) and context.has_key(key):
-                context = context.get(key)
-            else:
-                raise KeyError('Could not find config/env attribute:"{0}" in path:{1}'
-                               .format(key, " -> ".join(path)))
-        return context
-
     def validate(self):
+        """
+        Top level Validation Method
+        """
         net_mode = self._get_env_attr(self.net_mode_path)
         if net_mode == 'VPCMIDO':
             # Make sure the mido config section is present
@@ -29,15 +32,62 @@ class VPC(ValidatorPlugin):
             self._check_mido_gateways()
             # Validate the mido host mapping section
             self._check_mido_host_mapping()
+            # Validate zookeeper entry(s)
+            self._check_zookeeper()
+            # Validate Cassandra entry(s)
+            self._check_cassandra()
+
+    def _path_to_string(self, path):
+        return "{0}".format(" -> ".join(path))
+
+    def _get_env_attr(self, path):
+        """
+        Convenience method for inspecting the environment dict and providing debug/error
+        info on missing attributes in the requested path.
+        :raises :KeyError
+        """
+        context = self.environment
+        for key in path:
+            if isinstance(context, dict) and context.has_key(key):
+                context = context.get(key)
+            else:
+                raise KeyError('Could not find config/env attribute:"{0}" in path:{1}'
+                               .format(key, self._path_to_string(path)))
+        return context
+
 
     def _check_mido_gateways(self):
+        """
+        Validate the Eucalyptus configuration for Mido Gateway(s). Validate the attribute
+        presence, type(s), and format.
+        """
         try:
-            # Legacy schema
-            mido_gw_hostnames = self._get_env_attr(self.mido_config_path + ['GatewayHost'])
+            # Check for presence of the Legacy schema using the GatewayHost attribute...
+            gateways_path = self.mido_config_path + ['GatewayHost']
+            gateway_host = self._get_env_attr(gateways_path)
+            if gateway_host:
+                self.success('VPC - GatewayHost defined:{0}'.format(gateway_host))
+                self.mido_gw_hostnames.append(gateway_host)
+            else:
+                self.failure('VPC - GatewayHost Attribute found empty at path:{0}'
+                             .format(self._path_to_string(gateways_path)))
+            try:
+                # Check to make sure only one method of providing a gateway is present
+                self.mido_config_path + ['Gateways']
+                self.failure('Found both "Gateways" and the older "GatewayHost" config attributes '
+                             'present in the Environment. Replace GatewayHost to use only the '
+                             '"Gateways" list attribute instead')
+            except KeyError:
+                pass
         except KeyError as KE:
+            # GatewayHost was not found so no check for the newer Gateways attribute...
             gateways = []
             try:
-                gateways = self._get_env_attr(self.mido_config_path + ['Gateways'])
+                gateways_path = self.mido_config_path + ['Gateways']
+                gateways = self._get_env_attr(gateways_path)
+                if not isinstance(gateways, list):
+                    self.failure('Gateways:"{0}" not of type list at path:"{1}"'
+                                 .format(gateways, self._path_to_string(gateways_path)))
             except KeyError as KE:
                 self.failure(str(KE))
                 return
@@ -61,6 +111,10 @@ class VPC(ValidatorPlugin):
                                  .format(gw.get('GatewayInterface')))
 
     def _check_mido_host_mapping(self):
+        """
+        Check that all hosts intended/expected to have Midolman running on them are present
+        in the hostname to IP addr mapping attribute
+        """
         try:
             mapping = self._get_env_attr(['default_attributes', 'midokura',
                                           'midolman-host-mapping'])
@@ -88,3 +142,42 @@ class VPC(ValidatorPlugin):
                 self.failure('VPC - Did not find NC ({0}) in Midolman host-mapping'.format(ip))
             else:
                 self.success('VPC - NC {0} is in the midolman host-mapping'.format(ip))
+
+    def _check_cassandra(self):
+        """
+        Check that a Cassandra server(s) has been provided an the attribute is of 'list' type
+        """
+        try:
+            cassandras = self._get_env_attr(self.cassandras_path)
+        except KeyError as KE:
+            self.failure(str(KE))
+            return
+        if not isinstance(cassandras, list):
+            self.failure('VPC - Cassandras attribute not of type list at path:"{0}"'
+                         .format(self._path_to_string(self.cassandras_path)))
+            return
+        self.success('VPC - Cassandra validation passed')
+
+    def _check_zookeeper(self):
+        """
+        Check that the Zookeeper Server(s) have been provided.
+        validate the list type, and validate the entry format
+        """
+        try:
+            zookeepers = self._get_env_attr(self.zookeepers_path)
+        except KeyError as KE:
+            self.failure(str(KE))
+            return
+        if not isinstance(zookeepers, list):
+            self.failure('VPC - Zookeepers attribute not of type list at path:"{0}"'
+                         .format(self._path_to_string(self.zookeepers_path)))
+            return
+        entry_error = False
+        for zk in zookeepers:
+            ip_port = re.match('^\s*(\w.*):(\d+)\s*$', zk)
+            if not ip_port or len(ip_port.groups()) != 2:
+                self.failure('VPC - Zookeeper entry:"{0}" may not be of format:"IP:PORT"'
+                             .format(zk))
+                entry_error = True
+        if not entry_error:
+            self.success('VPC - Zookeeper validation passed')
