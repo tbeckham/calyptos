@@ -8,8 +8,8 @@ default_attributes:
       riak_cs:
         anonymous_user_creation: true
         fold_objects_for_list_keys: true
-        admin_key: "admin-key"
-        admin_secret: "admin-secret"
+        admin_key: "__string_admin-key"
+        admin_secret: "__string_admin-secret"
         cs_port: 8080
   riak:
     config:
