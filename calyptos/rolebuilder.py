@@ -7,11 +7,13 @@ class RoleBuilder():
     ROLE_LIST = ['clc',
                  'user-facing',
                  'walrus',
-                 'midonet-api',
                  'cluster-controller',
                  'storage-controller',
                  'node-controller',
+                 'midonet-api',
                  'midolman',
+                 'mido-zookeeper',
+                 'mido-cassandra',
                  'mon-bootstrap',
                  'ceph-mons',
                  'ceph-osds',
@@ -177,22 +179,23 @@ class RoleBuilder():
             # Add Midokura roles
             midokura_attributes = self.env_dict.get('midokura', None)
             if midokura_attributes and euca_attributes['network']['mode'] == 'VPCMIDO':
-                try:
-                    mido = euca_attributes['network']['config-json']['Mido']
-                    mido_gw_hostname = mido.get('EucanetdHost', None)
-                    midolman_host_mapping = midokura_attributes.get('midolman-host-mapping', None)
-                    if midolman_host_mapping:
-                        mido_api_ip = midolman_host_mapping.get(mido_gw_hostname, None)
-                        if not mido_api_ip:
-                            raise Exception('Unable to find midonet-api ({0}) host in midolman-host-mapping'.format(mido_gw_hostname))
-                        # Add the host IP for the midonet gw
-                        roles['midonet-api'].add(mido_api_ip)
-                        # Add hosts from the midonet host mapping, and all nodes
-                        for hostname, host_ip in midolman_host_mapping.iteritems():
-                            roles['midolman'].add(host_ip)
-                        for node in roles['node-controller']:
-                            roles['midolman'].add(node)
-                except KeyError:
-                    roles['midolman'] = roles['node-controller']
-                    roles['midonet-api'] = roles['clc']
+                mido = euca_attributes['network']['config-json']['Mido']
+                mido_gw_hostname = mido.get('EucanetdHost', None)
+                midolman_host_mapping = midokura_attributes.get('midolman-host-mapping', None)
+                if midolman_host_mapping:
+                    mido_api_ip = midolman_host_mapping.get(mido_gw_hostname, None)
+                    if not mido_api_ip:
+                        raise Exception('Unable to find midonet-api ({0}) host '
+                                        'in midolman-host-mapping'.format(mido_gw_hostname))
+                    # Add the host IP for the midonet gw
+                    roles['midonet-api'].add(mido_api_ip)
+                    # Add hosts from the midonet host mapping, and all nodes
+                    for hostname, host_ip in midolman_host_mapping.iteritems():
+                        roles['midolman'].add(host_ip)
+                    for node in roles['node-controller']:
+                        roles['midolman'].add(node)
+                for host in self.env_dict.get('midokura', {}).get('zookeepers', []):
+                    roles['mido-zookeeper'].add(str(host).split(':')[0])
+                for host in self.env_dict.get('midokura', {}).get('cassandras', []):
+                    roles['mido-cassandra'].add(host)
         return roles

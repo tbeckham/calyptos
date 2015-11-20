@@ -19,7 +19,8 @@ deployer:
       - midolman:
         - midokura::midolman
       - midonet-api:
-        - midokura
+        - midokura::midolman
+        - midokura::midonet-api
       - mon-bootstrap:
         - ceph-cluster::mon-bootstrap
       - ceph-mons:
