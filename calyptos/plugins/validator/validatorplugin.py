@@ -1,6 +1,6 @@
 # stevedore/example/base.py
 import abc
-from fabric.colors import red, green, cyan
+from fabric.colors import red, green, cyan, yellow
 import six
 
 
@@ -22,6 +22,9 @@ class ValidatorPlugin(object):
 
     def failure(self, message):
         print red(self.message_style.format('VALIDATION FAILED', message))
+
+    def warning(self, message):
+        print yellow(self.message_style.format('VALIDATION FAILED. RETRYING..', message))
 
     def report(self, failed, passed):
         print cyan(self.message_style.format('TEST RESULTS',
