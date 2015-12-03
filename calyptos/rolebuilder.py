@@ -196,6 +196,8 @@ class RoleBuilder():
                         roles['midolman'].add(node)
                 for host in self.env_dict.get('midokura', {}).get('zookeepers', []):
                     roles['mido-zookeeper'].add(str(host).split(':')[0])
+                    roles['all'].add(str(host).split(':')[0])
                 for host in self.env_dict.get('midokura', {}).get('cassandras', []):
                     roles['mido-cassandra'].add(host)
+                    roles['all'].add(host)
         return roles
