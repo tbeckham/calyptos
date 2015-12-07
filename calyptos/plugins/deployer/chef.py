@@ -174,8 +174,11 @@ class Chef(DeployerPlugin):
 
         if self.roles['riak-head']:
             riak_head = self.roles['riak-head']
-            self.chef_manager.add_to_run_list(riak_head, ['riakcs-cluster::plancommit', 'riakcs-cluster::mergecreds'])
+            self.chef_manager.add_to_run_list(riak_head, ['riakcs-cluster::mergecreds'])
             self._run_chef_on_hosts(riak_head)
+            riak_nodes = self.roles['riak-node']
+            self.chef_manager.add_to_run_list(riak_nodes, ['riakcs-cluster::join'])
+            self._run_chef_on_hosts(riak_nodes)
 
         if self.roles['clc']:
             clc = self.roles['clc']
