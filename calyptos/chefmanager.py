@@ -180,6 +180,11 @@ class ChefManager():
             run('curl --insecure -L https://www.chef.io/chef/install.sh | '
                 'sudo bash -s -- -v ' + self.CHEF_VERSION)
 
+    def clear_node_info(self):
+        with cd(self.remote_folder_path + 'chef-repo'):
+            with hide('running'):
+                return run('knife node bulk delete -z -E {0} -y ".*"'.format(self.environment_name))
+
     def run_chef_client(self, chef_command="chef-client -z"):
         with cd(self.remote_folder_path + 'chef-repo'):
             with hide('running'):

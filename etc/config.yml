@@ -22,11 +22,11 @@ deployer:
         - midokura::midolman
         - midokura::midonet-api
       - mon-bootstrap:
-        - ceph-cluster::mon-bootstrap
+        - ceph-cluster::mon
       - ceph-mons:
-        - ceph-cluster::mons
+        - ceph-cluster::mon
       - ceph-osds:
-        - ceph-cluster::osds
+        - ceph-cluster::osd
       - riak-head:
         - riakcs-cluster::ttyfix
         - riak-cs::package

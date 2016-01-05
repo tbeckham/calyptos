@@ -109,18 +109,23 @@ class RoleBuilder():
 
         if ceph_attributes:
             ceph_topology = ceph_attributes['topology']
-            if ceph_topology['mon_bootstrap']:
-                roles['mon-bootstrap'] = set([ceph_topology['mon_bootstrap']['ipaddr']])
-                roles['all'].add(ceph_topology['mon_bootstrap']['ipaddr'])
-            else:
-                raise Exception("No Monitor found for bootstraping!")
-
             if ceph_topology.get('mons'):
+                mon_bootstrap = set()
                 monset = set()
                 for mon in ceph_topology['mons']:
+                    if mon.get('init') and not mon_bootstrap:
+                        mon_bootstrap.add(mon['ipaddr'])
                     monset.add(mon['ipaddr'])
                     roles['all'].add(mon['ipaddr'])
+                if not mon_bootstrap:
+                    raise Exception("No Initial Ceph Monitor found! Please mention at least one initial monitor.\n"
+                                    "e.g\n"
+                                    "mons:\n"
+                                    "  - ipaddr: '10.10.1.5'\n"
+                                    "    hostname: 'node1'\n"
+                                    "    init: true")
                 roles['ceph-mons'] = monset
+                roles['mon-bootstrap'] = mon_bootstrap
 
             if ceph_topology['osds']:
                 osdset = set()

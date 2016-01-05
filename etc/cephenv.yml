@@ -8,23 +8,31 @@ chef_type: "environment"
 default_attributes:
   ceph:
     config:
-      fsid: "6d7dca16-152c-4401-a93f-88dc916540d2"
+      fsid: "abcdefgh-ijkl-mnop-qrst-uvwxyz"
+      bind-interface: "em1"
+      public_network: "10.98.0.0/16"
+      cluster_network: "10.98.0.0/16"
+    users:
+      - name: "demouser"
     topology:
-      mon_bootstrap:
-        ipaddr: "10.10.1.01"
-        hostname: "host-01"
       mons:
-        - ipaddr: "10.10.1.02"
-          hostname: "host-02"
+        - ipaddr: "10.98.5.30"
+          hostname: "node10"
+          init: true
+        - ipaddr: "10.98.5.31"
+          hostname: "node11"
+        - ipaddr: "10.98.5.32"
+          hostname: "node12"
       osds:
-        - ipaddr: "10.10.1.03"
-          hostname: "host-03"
-          drive:
-            - "/dev/sdb"
-            - "/dev/sdc"
-        - ipaddr: "10.10.1.04"
-          hostname: "host-04"
-          drive:
-            - "/dev/sdb"
-            - "/dev/sdc"
+        - ipaddr: "10.98.5.33"
+          hostname: "node13"
+          fstype: "xfs"
+          drives:
+            - "/dev/sdh"
+            - "/dev/sdg"
+        - ipaddr: "10.98.5.34"
+          hostname: "node14"
 override_attributes: {}
+
+# the above OSD settings are not recommended and for demonstration purpose only.
+# all OSDs should have similar configuration.
