@@ -147,6 +147,18 @@ class Chef(DeployerPlugin):
         print green('Bootstrap has completed successfully. Continue on to the provision phase')
 
     def _pre_provision_check(self):
+        if self.roles['ceph-mons']:
+            ceph_components = set()
+            for component_name in ['mon-bootstrap', 'ceph-mons', 'ceph-osds']:
+                self.chef_manager.add_to_run_list(self.roles[component_name],
+                                              self._get_recipe_list(component_name))
+                ceph_components.update(self.roles[component_name])
+            self._run_chef_on_hosts(ceph_components)
+            if self.roles['ceph-mons']:
+                mon_bootstrap = self.roles['mon-bootstrap']
+                self.chef_manager.add_to_run_list(mon_bootstrap, ['ceph-cluster::user'])
+                self._run_chef_on_hosts(mon_bootstrap)
+
         if self.roles['clc']:
             clc_attributes = self.chef_manager.get_node_json(list(self.roles['clc'])[0])
             clc_euca_attributes = clc_attributes['normal']['eucalyptus']
@@ -171,11 +183,6 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(self.roles[component_name],
                                               self._get_recipe_list(component_name))
         self._run_chef_on_hosts(self.all_hosts)
-
-        if self.roles['mon-bootstrap']:
-            mon_bootstrap = self.roles['mon-bootstrap']
-            self.chef_manager.add_to_run_list(mon_bootstrap, ['ceph-cluster::user'])
-            self._run_chef_on_hosts(mon_bootstrap)
 
         if self.roles['riak-head']:
             riak_head = self.roles['riak-head']
