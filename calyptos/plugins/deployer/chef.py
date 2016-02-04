@@ -46,16 +46,30 @@ class Chef(DeployerPlugin):
                                                     '/cookbooks'),
                                        debug=debug)
 
-    @staticmethod
-    def get_chef_config(config_file):
+    # @staticmethod
+    def get_chef_config(self, config_file):
         full_config = yaml.load(open(config_file).read())
         if 'deployer' in full_config:
             if 'chef' in full_config['deployer']:
-                return full_config['deployer']['chef']
+                chef_config = self.overrice_chef_config(full_config['deployer']['chef'])
+                return chef_config
             else:
                 raise IndexError('Unable to find chef config in deployer section of config file')
         else:
             raise IndexError('Unable to find deployer section of config file')
+
+    # TODO shaon - fix this
+    def overrice_chef_config(self, chef_config):
+        try:
+            exclude_recipes = self._get_environment()['default_attributes']['exclude-recipes']
+            for xr in exclude_recipes:
+                for role in chef_config['roles']:
+                    for component in role:
+                        if xr in role[component]:
+                            role[component].remove(xr)
+        except:
+            pass
+        return chef_config
 
     def _get_recipe_list(self, component):
         for recipe_dict in self.config['roles']:
