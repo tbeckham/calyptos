@@ -6,6 +6,7 @@ class RoleBuilder():
     # Global list of roles
     ROLE_LIST = ['clc',
                  'user-facing',
+                 'console',
                  'walrus',
                  'cluster-controller',
                  'storage-controller',
@@ -142,6 +143,12 @@ class RoleBuilder():
             roles['user-facing'] = set(topology['user-facing'])
             for ufs in topology['user-facing']:
                 roles['all'].add(ufs)
+
+            # add console
+            if 'console' in topology:
+                roles['console'] = set(topology['console'])
+                for console in topology['console']:
+                    roles['all'].add(console)
 
             # Add Walrus
             if 'walrus' in topology:
