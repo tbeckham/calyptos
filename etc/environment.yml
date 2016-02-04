@@ -9,6 +9,8 @@ default_attributes:
       walrus: 10.113.10.2
       user-facing:
       - 10.113.10.3
+      console:
+      - 10.113.10.100
       clusters:
         one:
           cc-1: 10.113.10.4
