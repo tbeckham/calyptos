@@ -51,7 +51,7 @@ class Chef(DeployerPlugin):
         full_config = yaml.load(open(config_file).read())
         if 'deployer' in full_config:
             if 'chef' in full_config['deployer']:
-                chef_config = self.overrice_chef_config(full_config['deployer']['chef'])
+                chef_config = self.override_chef_config(full_config['deployer']['chef'])
                 return chef_config
             else:
                 raise IndexError('Unable to find chef config in deployer section of config file')
@@ -59,7 +59,7 @@ class Chef(DeployerPlugin):
             raise IndexError('Unable to find deployer section of config file')
 
     # TODO shaon - fix this
-    def overrice_chef_config(self, chef_config):
+    def override_chef_config(self, chef_config):
         try:
             exclude_recipes = self._get_environment()['default_attributes']['exclude-recipes']
             for xr in exclude_recipes:
