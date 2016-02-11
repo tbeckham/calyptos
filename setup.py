@@ -79,7 +79,7 @@ example_items = glob.glob('examples/*')
 
 
 
-requirements = ['fabric', 'PyYaml', 'stevedore', 'sphinx',
+requirements = ['fabric', 'PyYaml', 'stevedore == 1.10.0', 'sphinx',
                 'pbr >= 0.10.7', 'six >= 1.9.0']
 setup_requirements = ['pbr']
 # argparse is only required if python<2.7
