@@ -5,17 +5,33 @@ description: 4.1 Ceph and Euca Testing
 default_attributes:
   ceph:
     config:
-      fsid: "0f2c3880-b92d-4bcb-b50a-b644bfc40be6"
+      fsid: "abcdefgh-ijkl-mnop-qrst-uvwxyz"
+      bind-interface: "em1"
+      public_network: "10.98.0.0/16"
+      cluster_network: "10.98.0.0/16"
+    users:
+      - name: "demouser"
     topology:
-      mon_bootstrap:
-        ipaddr: "10.111.5.43"
-        hostname: "a-01"
+      mons:
+        - ipaddr: "10.98.5.30"
+          hostname: "node10"
+          init: true
+        - ipaddr: "10.98.5.31"
+          hostname: "node11"
+        - ipaddr: "10.98.5.32"
+          hostname: "node12"
       osds:
-        - ipaddr: "10.111.5.160"
-          hostname: "g-12-10"
-        - ipaddr: "10.111.1.213"
-          hostname: "b-23"
+        - ipaddr: "10.98.5.33"
+          hostname: "node13"
+          fstype: "xfs"
+          drives:
+            - "/dev/sdh"
+            - "/dev/sdg"
+        - ipaddr: "10.98.5.34"
+          hostname: "node14"
   eucalyptus:
+    dns:
+      domain: ufs.demo-cloud.com
     system-properties:
       one.storage.cephconfigfile: /etc/ceph/ceph.conf
       one.storage.cephkeyringfile: /etc/ceph/ceph.client.admin.keyring
@@ -23,37 +39,38 @@ default_attributes:
       one.storage.cephuser: admin
       one.storage.cephvolumepools: rbd
     topology:
-      clc-1: 10.111.1.40
-      walrus: 10.111.1.40
+      clc-1: 10.98.1.40
+      walrus: 10.98.1.40
       user-facing:
-      - 10.111.1.40
+      - 10.98.1.40
       clusters:
         one:
-          cc-1: 10.111.1.40
-          sc-1: 10.111.1.40
+          cc-1: 10.98.1.40
+          sc-1: 10.98.1.40
           storage-backend: ceph-rbd
-          nodes: 10.111.1.51
+          nodes: 10.98.1.51
     nc:
       max-cores: 8
     network:
+      dns-server: 10.98.1.208
       mode: EDGE
       nc-router: N
       config-json:
         InstanceDnsServers:
-        - 10.111.1.40
+        - 10.98.1.40
         PublicIps:
-        - 10.111.31.104
-        - 10.111.31.105
+        - 10.98.31.104
+        - 10.98.31.105
         Clusters:
         - Name: one
           PrivateIps:
-          - 10.111.75.146
-          - 10.111.75.147
+          - 10.98.75.146
+          - 10.98.75.147
           Subnet:
-            Subnet: 10.111.0.0
+            Subnet: 10.98.0.0
             Netmask: 255.255.0.0
-            Name: 10.111.0.0
-            Gateway: 10.111.0.1
+            Name: 10.98.0.0
+            Gateway: 10.98.0.1
       public-interface: br0
       private-interface: br0
       bridge-interface: br0

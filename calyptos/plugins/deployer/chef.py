@@ -126,7 +126,7 @@ class Chef(DeployerPlugin):
 
     def bootstrap(self):
         # Install CLC and Initialize DB
-        if self.roles['mon-bootstrap']:
+        if self.roles['ceph-mons']:
             mon_bootstrap = self.roles['mon-bootstrap']
             self.chef_manager.clear_run_list(self.all_hosts)
             self.chef_manager.add_to_run_list(mon_bootstrap, self._get_recipe_list('mon-bootstrap'))
@@ -161,6 +161,18 @@ class Chef(DeployerPlugin):
         print green('Bootstrap has completed successfully. Continue on to the provision phase')
 
     def _pre_provision_check(self):
+        if self.roles['ceph-mons']:
+            ceph_components = set()
+            for component_name in ['mon-bootstrap', 'ceph-mons', 'ceph-osds']:
+                self.chef_manager.add_to_run_list(self.roles[component_name],
+                                              self._get_recipe_list(component_name))
+                ceph_components.update(self.roles[component_name])
+            self._run_chef_on_hosts(ceph_components)
+            if self.roles['ceph-mons']:
+                mon_bootstrap = self.roles['mon-bootstrap']
+                self.chef_manager.add_to_run_list(mon_bootstrap, ['ceph-cluster::user'])
+                self._run_chef_on_hosts(mon_bootstrap)
+
         if self.roles['clc']:
             clc_attributes = self.chef_manager.get_node_json(list(self.roles['clc'])[0])
             clc_euca_attributes = clc_attributes['normal']['eucalyptus']
@@ -211,11 +223,12 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(self.all_hosts, ['eucalyptus::nuke'])
         if self.roles['riak-head']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['riakcs-cluster::nuke'])
-        if self.roles['mon-bootstrap']:
+        if self.roles['ceph-mons']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['ceph-cluster::nuke'])
         if self.roles['haproxy']:
             self.chef_manager.add_to_run_list(self.all_hosts, ['haproxy::nuke'])
         self._run_chef_on_hosts(self.all_hosts)
         with lcd('chef-repo'):
             local('knife node bulk delete -z -E {0} -y ".*"'.format(self.environment_name))
+        execute(self.chef_manager.clear_node_info, hosts=self.all_hosts)
         print green('Uninstall has completed successfully. Your cloud is now torn down.')
