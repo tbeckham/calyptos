@@ -1,38 +1,60 @@
-
 ---
-name: "ceph-cluster"
-description: "Ceph cluster"
-cookbook_versions: {}
-json_class: "Chef::Environment"
-chef_type: "environment"
-default_attributes:
-  ceph:
-    config:
-      fsid: "abcdefgh-ijkl-mnop-qrst-uvwxyz"
-      bind-interface: "em1"
-      public_network: "10.98.0.0/16"
-      cluster_network: "10.98.0.0/16"
-    users:
-      - name: "demouser"
-    topology:
-      mons:
-        - ipaddr: "10.98.5.30"
-          hostname: "node10"
-          init: true
-        - ipaddr: "10.98.5.31"
-          hostname: "node11"
-        - ipaddr: "10.98.5.32"
-          hostname: "node12"
-      osds:
-        - ipaddr: "10.98.5.33"
-          hostname: "node13"
-          fstype: "xfs"
-          drives:
-            - "/dev/sdh"
-            - "/dev/sdg"
-        - ipaddr: "10.98.5.34"
-          hostname: "node14"
-override_attributes: {}
-
-# the above OSD settings are not recommended and for demonstration purpose only.
-# all OSDs should have similar configuration.
+  name: "ceph-cluster"
+  description: "Ceph cluster"
+  cookbook_versions: {}
+  json_class: "Chef::Environment"
+  chef_type: "environment"
+  default_attributes:
+    ceph:
+      config:
+        fsid: "abcdabcd-abcd-abcd-abcd-abcdabcdabcd"
+        bind-interface: "em1"
+        public-network: "10.101.0.0/16"
+        cluster-network: "10.117.0.0/16"
+        osd-journal-size: "10240"
+      users:
+        - name: "demouser"
+      topology:
+        mons:
+          - ipaddr: "10.111.15.121"
+            hostname: "mon-1"
+            init: true
+          - ipaddr: "10.101.15.124"
+            hostname: "mon-2"
+          - ipaddr: "10.101.15.129"
+            hostname: "mon-3"
+        osds:
+          - ipaddr: "10.101.15.30"
+            hostname: "osd-1"
+            fstype: "xfs"
+            journal-path: "/dev/sdd"
+            drives:
+              - disk: "/dev/sdb"
+              - disk: "/dev/sdc"
+              - disk: "/dev/sde"
+              - disk: "/dev/sdf"
+              - disk: "/dev/sdg"
+              - disk: "/dev/sdh"
+          - ipaddr: "10.101.15.31"
+            hostname: "osd-2"
+            fstype: "xfs"
+            journal-path: "/dev/sdd"
+            drives:
+              - disk: "/dev/sdb"
+              - disk: "/dev/sdc"
+              - disk: "/dev/sde"
+              - disk: "/dev/sdf"
+              - disk: "/dev/sdg"
+              - disk: "/dev/sdh"
+          - ipaddr: "10.101.15.32"
+            hostname: "osd-3"
+            fstype: "xfs"
+            journal-path: "/dev/sdd"
+            drives:
+              - disk: "/dev/sdb"
+              - disk: "/dev/sdc"
+              - disk: "/dev/sde"
+              - disk: "/dev/sdf"
+              - disk: "/dev/sdg"
+              - disk: "/dev/sdh"
+  override_attributes: {}
