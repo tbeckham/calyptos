@@ -1,6 +1,6 @@
 import json
 from fabric.operations import local
-from fabric.colors import red, green
+from fabric.colors import red, green, cyan
 import yaml
 from deployerplugin import DeployerPlugin
 from fabric.context_managers import hide, warn_only, lcd
@@ -216,6 +216,13 @@ class Chef(DeployerPlugin):
                 self.chef_manager.add_to_run_list(midonet_api, [create_resources])
                 self._run_chef_on_hosts(midonet_api)
         print green('Provision has completed successfully. Your cloud is now configured and ready to use.')
+
+        if self.roles['clc']:
+            print cyan('Setting up admin credentials.')
+            clc = self.roles['clc']
+            self.chef_manager.clear_run_list(clc)
+            self.chef_manager.add_to_run_list(clc, ['eucalyptus::setupcreds'])
+            self._run_chef_on_hosts(clc)
 
     def uninstall(self):
         self.chef_manager.clear_run_list(self.all_hosts)
