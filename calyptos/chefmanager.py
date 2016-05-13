@@ -64,7 +64,7 @@ class ChefManager():
             execute(run, cmd, hosts=hosts)
 
     @staticmethod
-    def install_chef_dk(version='0.6.0', debug=False):
+    def install_chef_dk(version='0.12', debug=False):
         info('Installing Chef DK ' + version)
         if debug:
             hidden_outputs = []
