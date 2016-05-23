@@ -26,8 +26,8 @@ class FailedToFindNodeException(Exception):
 
 
 class ChefManager():
-    CHEF_VERSION = "12.0"
-    CHEFDK_VERSION = "0.12"  # don't confuse chefdk version with chef version
+    CHEF_VERSION = "12.8.1"   # version in the chefdk 0.12.0, be consistent
+    CHEFDK_VERSION = "0.12.0"
 
     def __init__(self, password, environment_name, hosts, debug=False):
         env.password = password
@@ -72,7 +72,7 @@ class ChefManager():
         else:
             hidden_outputs = ['running', 'stdout', 'stderr']
         with hide(*hidden_outputs):
-            local('chef -v | grep "' + version + '" || curl -L https://omnitruck.chef.io/install.sh | '
+            local('chef -v | grep "Chef Development Kit Version: ' + version + '" || curl -L https://omnitruck.chef.io/install.sh | '
                                                  'sudo bash -s -- -P chefdk -v ' + version)
 
     @staticmethod
