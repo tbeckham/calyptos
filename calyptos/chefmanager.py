@@ -26,7 +26,8 @@ class FailedToFindNodeException(Exception):
 
 
 class ChefManager():
-    CHEF_VERSION = "11.16.4"
+    CHEF_VERSION = "12.8.1"   # version in the chefdk 0.12.0, be consistent
+    CHEFDK_VERSION = "0.12.0"
 
     def __init__(self, password, environment_name, hosts, debug=False):
         env.password = password
@@ -64,14 +65,14 @@ class ChefManager():
             execute(run, cmd, hosts=hosts)
 
     @staticmethod
-    def install_chef_dk(version='0.6.0', debug=False):
+    def install_chef_dk(version=CHEFDK_VERSION, debug=False):
         info('Installing Chef DK ' + version)
         if debug:
             hidden_outputs = []
         else:
             hidden_outputs = ['running', 'stdout', 'stderr']
         with hide(*hidden_outputs):
-            local('chef -v | grep "' + version + '" || curl -L https://www.opscode.com/chef/install.sh | '
+            local('chef -v | grep "Chef Development Kit Version: ' + version + '" || curl -L https://omnitruck.chef.io/install.sh | '
                                                  'sudo bash -s -- -P chefdk -v ' + version)
 
     @staticmethod
@@ -177,7 +178,7 @@ class ChefManager():
         result = run('chef-client -v', warn_only=True)
         if result.return_code != 0:
             info("Installing chef client on: " + str(env.host))
-            run('curl --insecure -L https://www.chef.io/chef/install.sh | '
+            run('curl --insecure -L https://omnitruck.chef.io/install.sh | '
                 'sudo bash -s -- -v ' + self.CHEF_VERSION)
 
     def clear_node_info(self):
