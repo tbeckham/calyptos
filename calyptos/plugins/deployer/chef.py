@@ -138,26 +138,34 @@ class Chef(DeployerPlugin):
             self.chef_manager.add_to_run_list(riak_head, self._get_recipe_list('riak-head'))
             self._run_chef_on_hosts(riak_head)
 
-        if self.roles['mido-zookeeper']:
+        if self.roles['mido-zookeeper'] and self.roles['mido-cassandra']:
+            mido_shared_zk_cass_hosts = self.roles['mido-zookeeper']
+            self.chef_manager.add_to_run_list(mido_shared_zk_cass_hosts, ['midokura::zookeeper'])
+            self.chef_manager.add_to_run_list(mido_shared_zk_cass_hosts, ['midokura::cassandra'])
+            self._run_chef_on_hosts(mido_shared_zk_cass_hosts)
+        elif self.roles['mido-zookeeper']:
             mido_zookeeper_hosts = self.roles['mido-zookeeper']
             self.chef_manager.add_to_run_list(mido_zookeeper_hosts, ['midokura::zookeeper'])
             self._run_chef_on_hosts(mido_zookeeper_hosts)
-
-        if self.roles['mido-cassandra']:
+        elif self.roles['mido-cassandra']:
             mido_cassandra_hosts = self.roles['mido-cassandra']
             self.chef_manager.add_to_run_list(mido_cassandra_hosts, ['midokura::cassandra'])
             self._run_chef_on_hosts(mido_cassandra_hosts)
-
-        if self.roles['midolman']:
-            midolman_hosts = self.roles['midolman']
-            self.chef_manager.add_to_run_list(midolman_hosts, ['midokura::midolman'])
-            self._run_chef_on_hosts(midolman_hosts)
 
         if self.roles['clc']:
             self.chef_manager.clear_run_list(self.all_hosts)
             clc = self.roles['clc']
             self.chef_manager.add_to_run_list(clc, self._get_recipe_list('clc'))
+            if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
+                self.chef_manager.add_to_run_list(clc, ['midokura::midonet-api'])
             self._run_chef_on_hosts(clc)
+
+        if self.roles['midolman']:
+            midolman_hosts = self.roles['midolman']
+            self.chef_manager.add_to_run_list(midolman_hosts,
+                                              ['midokura::midolman'])
+            self._run_chef_on_hosts(midolman_hosts)
+
         print green('Bootstrap has completed successfully. Continue on to the provision phase')
 
     def _pre_provision_check(self):
@@ -209,13 +217,10 @@ class Chef(DeployerPlugin):
         if self.roles['clc']:
             clc = self.roles['clc']
             self.chef_manager.add_to_run_list(clc, ['eucalyptus::configure'])
-            self._run_chef_on_hosts(clc)
             if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
-                midonet_api = self.roles['midonet-api']
-                create_resources = 'midokura::create-first-resources'
-                self.chef_manager.add_to_run_list(midonet_api, [create_resources])
-                self._run_chef_on_hosts(midonet_api)
-            
+                self.chef_manager.add_to_run_list(clc, ['midokura::create-first-resources'])
+            self._run_chef_on_hosts(clc)
+
         if self.roles['clc']:
             print cyan('Setting up admin credentials.')
             clc = self.roles['clc']
