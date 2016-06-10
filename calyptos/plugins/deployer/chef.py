@@ -157,6 +157,12 @@ class Chef(DeployerPlugin):
             clc = self.roles['clc']
             self.chef_manager.add_to_run_list(clc, self._get_recipe_list('clc'))
             if self.role_builder.get_euca_attributes()['network']['mode'] == 'VPCMIDO':
+                # short term hack, midolman configuration must be complete on the clc
+                # before mn-conf can be run to communicate with a remote zookeeper,
+                # but I think we want to avoid running the midolman step below a
+                # second time on the clc, figure out how to remove the clc from that
+                # midolman_hosts list
+                self.chef_manager.add_to_run_list(clc, ['midokura::midolman'])
                 self.chef_manager.add_to_run_list(clc, ['midokura::midonet-api'])
             self._run_chef_on_hosts(clc)
 
