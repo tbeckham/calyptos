@@ -22,7 +22,7 @@ cfglist = []
 cfglist.append(default_cfgfile)
 cfglist.append('/usr/share/calyptos/config.yml')
 
-default_branch = 'euca-4.2'
+default_branch = 'euca-4.3'
 default_cookbook_repo = 'https://github.com/eucalyptus/eucalyptus-cookbook'
 default_driver = 'chef'
 default_namespace = 'calyptos.deployer'
