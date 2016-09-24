@@ -6,13 +6,13 @@ This is a tool for managing your Eucalyptus deployments
 
 ## Install
 
-### On a CentOS 6 system:
+### On a CentOS 7 system:
 
     yum install -y python-devel gcc git python-setuptools
     git clone https://github.com/eucalyptus/calyptos
     cd calyptos
     python setup.py install
-    
+
 ## Lifecycle Actions
 The cloud lifecycle is broken down into many phases:
 
@@ -33,7 +33,7 @@ This step ensures that our dependencies are installed on all servers and that we
 This step deploys the CLC and initializes the database. Here we are getting a bit deeper and if complete, we can assume that we've are on good footing to continue deploying the rest of the cloud.
 
     calyptos bootstrap -p <root-ssh-password-for-deployment-systems>
-  
+
 ### Provision
 Provisions the rest of the system or update the configuration of an existing system. If you change anything in your environment.yml, you can use this to push that change out to your cloud.
 
@@ -52,4 +52,3 @@ This step will grab all necessary information from a system in order to provide 
 ```
     calyptos debug -p <root-ssh-password-for-deployment-systems>
 ```
-    
