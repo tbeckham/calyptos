@@ -8,7 +8,7 @@ This is a tool for managing your Eucalyptus deployments
 
 ### On a CentOS 7 system:
 
-    yum install -y python-devel gcc git python-setuptools
+    yum install -y python-devel gcc git python-setuptools libffi-devel openssl-devel
     git clone https://github.com/eucalyptus/calyptos
     cd calyptos
     python setup.py install
